@@ -1,0 +1,131 @@
+ .finals-page{min-height:100vh;background:#0c1020;color:#f8fafc;padding:0.7vw;font-family:inherit;display:flex;flex-direction:column;gap:.6vw;box-sizing:border-box}.finals-header{display:grid;grid-template-columns:1fr 1.25fr 1fr;align-items:center;gap:1vw;padding:.5vw 1vw;border:1px solid #334155;border-radius:.7vw;background:#161b2b;min-height:125px}.finals-heading h1{font-size:clamp(20px,2vw,40px);line-height:1.05;margin:.2em 0;color:white}.finals-heading p{color:#cbd5e1;margin:0}.finals-kicker{font-weight:900;color:#f472b6;letter-spacing:.1em;font-size:.8vw}.finals-belt{width:100%;max-height:145px;object-fit:contain}.finals-qrs{display:flex;justify-content:flex-end;gap:.5vw;min-width:0}.finals-qrs .qr-card{max-width:110px}.finals-qrs img{max-height:75px;max-width:75px}.finals-columns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.7vw;flex:1;min-height:0}.finals-division{display:flex;flex-direction:column;gap:.5vw;min-width:0}.finals-division-title{display:flex;justify-content:space-between;align-items:center;padding:.4vw .7vw;border-radius:.45vw;background:linear-gradient(90deg,#243653,#161b2b);font-size:1.2vw}.finals-division-title span{font-size:.85em;color:#cbd5e1}.finals-group{flex:1;min-height:0;border:1px solid #394258;background:linear-gradient(135deg,#1b2234,#111827);border-radius:.55vw;padding:.5vw;display:flex;flex-direction:column;gap:.35vw}.finals-group-heading{display:flex;justify-content:space-between;gap:.5vw;font-size:1vw}.finals-group-heading span{color:#a9bad4;font-size:.85em}.finals-progress{height:5px;background:#334155;border-radius:5px;overflow:hidden}.finals-progress>div{height:100%;background:#4ade80;transition:width .3s}.finals-grid{display:grid;gap:3px;align-items:stretch;min-width:0;flex:1}.finals-colhead{font-size:clamp(9px,.74vw,16px);font-weight:850;text-align:center;overflow:hidden;line-height:1.1;display:flex;flex-direction:column;justify-content:center;min-width:0;overflow-wrap:anywhere;color:#fbbf24}.finals-colhead:first-child{text-align:left}.finals-colhead small{color:#93c5fd;font-size:.85em;margin-top:3px}.finals-colhead small.finished{color:#4ade80}.finals-player-row{display:contents}.finals-player,.finals-score,.finals-total{display:flex;align-items:center;background:#ffffff0c;border-radius:4px;padding:.25vw;font-size:clamp(10px,.83vw,19px);min-width:0}.finals-player{font-weight:800;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.finals-score{justify-content:space-around;gap:.2vw}.finals-score.scored{background:#14532d66}.finals-position{font-size:.8em;color:#93c5fd}.finals-score b{color:#fbbf24}.finals-total{justify-content:center;font-weight:950;background:#fbbf2424;color:#fde68a}.finals-footer{text-align:center;font-size:.7vw;color:#94a3b8}.finals-error{color:#fb7185}@media(max-width:1100px){.finals-columns{grid-template-columns:1fr}.finals-header{grid-template-columns:1fr 1fr}.finals-belt{max-height:100px}.finals-qrs{grid-column:1/-1;justify-content:center}}
+/* Clinched advancement indicators */
+.finals-player.finals-advancing{background:#16653488;gap:.25vw}
+.finals-player-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.finals-player.finals-eliminated{background:#7f1d1d77;gap:.25vw}
+.finals-outcome{margin-left:auto;flex-shrink:0;font-size:clamp(7px,.52vw,12px);font-weight:900;letter-spacing:.01em}
+.finals-outcome.advanced{color:#86efac}
+.finals-outcome.eliminated{color:#fca5a5}
+
+/* Finals tiebreaker spotlight: visual urgency without rapid flashing. */
+.finals-group.finals-group-tb-active{border-color:#f472b6;box-shadow:0 0 0 1px #ec489955,0 0 18px #ec489922}
+.finals-tb-colhead-live{color:#fce7f3;background:linear-gradient(180deg,#831843aa,#3b123c66);border:1px solid #f472b6;border-radius:5px;padding:3px;box-shadow:0 0 12px #ec489944;animation:finals-tb-breathe 3s ease-in-out infinite}
+.finals-tb-heading{display:block;font-weight:950;letter-spacing:.06em;font-size:clamp(8px,.67vw,14px);margin-bottom:3px}
+.finals-tb-heading.is-live{color:#f9a8d4}
+.finals-tb-heading.is-finished{color:#86efac}
+.finals-tb-score-live{background:#83184355;border:1px solid #ec489955}
+.finals-tb-score-live.finals-tb-participant{background:#9d174d77;border-color:#f472b6;box-shadow:inset 0 0 8px #ec489933}
+.finals-tb-score-finished.scored{background:#14532d88;border:1px solid #4ade8066}
+.finals-tb-colhead-finished{color:#86efac;border:1px solid #4ade8055;border-radius:5px}
+@keyframes finals-tb-breathe{0%,100%{box-shadow:0 0 6px #ec489933}50%{box-shadow:0 0 17px #ec489977}}
+@media(prefers-reduced-motion:reduce){.finals-tb-colhead-live{animation:none}}
+
+/* Round-responsive scoreboard: each division scales independently. */
+.finals-division-2 .finals-group-heading{font-size:clamp(16px,1.35vw,28px)}
+.finals-division-2 .finals-player,.finals-division-2 .finals-score,.finals-division-2 .finals-total{font-size:clamp(15px,1.35vw,28px)}
+.finals-division-2 .finals-colhead{font-size:clamp(12px,1vw,21px)}
+.finals-division-1:not(.finals-division-results) .finals-group-heading{font-size:clamp(19px,1.7vw,34px)}
+.finals-division-1:not(.finals-division-results) .finals-player,.finals-division-1:not(.finals-division-results) .finals-score,.finals-division-1:not(.finals-division-results) .finals-total{font-size:clamp(19px,1.75vw,36px)}
+.finals-division-1:not(.finals-division-results) .finals-colhead{font-size:clamp(14px,1.3vw,26px)}
+.finals-division-results .finals-results{display:flex;flex-direction:column;gap:.6vw;flex:1;min-height:0}
+.finals-group-compact{flex:0 0 auto;min-height:180px}
+.finals-group-compact .finals-grid{flex:none;grid-auto-rows:minmax(26px,auto)}
+.finals-results-list{flex:1;display:flex;flex-direction:column;gap:.35vw;border:1px solid #394258;border-radius:.55vw;padding:.55vw;background:#141c2d;min-height:0}
+.finals-results-heading{font-weight:950;color:#fbbf24;letter-spacing:.12em;font-size:clamp(12px,.95vw,20px);text-align:center}
+.finals-placement{display:flex;align-items:center;gap:.55vw;padding:.35vw .7vw;border-radius:.45vw;border:1px solid transparent;min-height:0}
+.finals-place-rank{font-weight:950;min-width:2.4em}
+.finals-placement strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.finals-place-1{background:#4a3718;border-color:#eab308;color:#fde68a;flex:1.6;font-size:clamp(18px,1.7vw,34px)}
+.finals-place-2{background:#25364b;border-color:#94a3b8;color:#e2e8f0;flex:1.2;font-size:clamp(16px,1.35vw,27px)}
+.finals-place-3{background:#3d2a21;border-color:#c08457;color:#fdba74;flex:1;font-size:clamp(14px,1.15vw,24px)}
+.finals-place-4{background:#31284a;border-color:#a78bfa;color:#ddd6fe;flex:.9;font-size:clamp(13px,1.05vw,22px)}
+.finals-winner-belt{width:clamp(45px,5.8vw,120px);height:clamp(30px,3.4vw,70px);object-fit:contain}
+.finals-cash{font-size:1.8em;line-height:1}
+.finals-winner-subtitle{margin-left:auto;font-size:.46em;font-weight:950;letter-spacing:.04em;text-align:right}
+.finals-other-placements{display:grid;grid-template-columns:1fr 1fr;gap:.1vw .5vw;flex:2;align-content:space-evenly;min-height:0}
+.finals-other-placements>div{display:flex;gap:.5vw;align-items:center;padding:.12vw .4vw;border-radius:3px;background:#ffffff09;font-size:clamp(11px,.85vw,18px);min-width:0}
+.finals-other-placements>div span:first-child{color:#94a3b8;font-weight:850;min-width:2em}
+.finals-other-placements>div span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.finals-results-pending{padding:1vw;color:#fbbf24;text-align:center}
+@media(max-height:800px){.finals-group-compact{min-height:145px}.finals-results-list{gap:.2vw}}
+
+/* Never truncate player names or machine labels. Rows expand for long text. */
+.finals-player,.finals-player-name,.finals-colhead,
+.finals-placement strong,.finals-other-placements>div span:last-child {
+  white-space:normal;
+  text-overflow:clip;
+  overflow:visible;
+  overflow-wrap:anywhere;
+  word-break:normal;
+  min-width:0;
+}
+.finals-player {align-items:center;gap:.3vw;flex-wrap:wrap;line-height:1.2;}
+.finals-player-name {flex:1 1 100%;}
+.finals-outcome {margin-left:0;max-width:100%;}
+.finals-colhead {line-height:1.2;padding-block:.3vw;}
+.finals-grid {grid-template-rows:auto repeat(4,minmax(0,1fr));}
+.finals-score,.finals-total {min-width:0;}
+.finals-placement {min-height:fit-content;flex-wrap:wrap;}
+.finals-other-placements>div {min-height:fit-content;align-items:start;}
+
+/* Championship-round secured placements: never use advancement/elimination labels. */
+.finals-player.finals-placed {gap:.3vw;}
+.finals-player.finals-placed-1 {background:#6b4b1d88;}
+.finals-player.finals-placed-2 {background:#334155aa;}
+.finals-player.finals-placed-3 {background:#6b3f2988;}
+.finals-player.finals-placed-4 {background:#45336588;}
+.finals-place-label {font-size:clamp(9px,.7vw,15px);letter-spacing:.04em;}
+.finals-place-label-1 {color:#fde68a;}
+.finals-place-label-2 {color:#e2e8f0;}
+.finals-place-label-3 {color:#fdba74;}
+.finals-place-label-4 {color:#ddd6fe;}
+
+/* Tiebreaker: keep nonparticipants in the grid, but visually remove their cells. */
+.finals-score.finals-tb-nonparticipant {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  opacity: 0.12;
+}
+
+/* Shared A/B division Total column: always keep heading on one line. */
+.finals-total-header { white-space: nowrap; overflow-wrap: normal; word-break: normal; text-align: center; }
+
+/* When BOTH divisions have final results, share the same scoreboard row height.
+   CSS subgrid aligns the FINAL STANDINGS sections to the lower of the two
+   completed round summaries without stretching either summary independently.
+   If one division is still playing, its existing adaptive layout is unchanged. */
+.finals-columns:has(> .finals-division-results:first-child):has(> .finals-division-results:last-child) {
+  grid-template-rows: auto auto minmax(0, 1fr);
+  align-items:stretch;
+}
+.finals-columns:has(> .finals-division-results:first-child):has(> .finals-division-results:last-child) > .finals-division-results {
+  display:grid;
+  grid-row:1 / span 3;
+  grid-template-rows:subgrid;
+  min-height:0;
+}
+.finals-columns:has(> .finals-division-results:first-child):has(> .finals-division-results:last-child) > .finals-division-results > .finals-results {
+  display:contents;
+}
+.finals-columns:has(> .finals-division-results:first-child):has(> .finals-division-results:last-child) > .finals-division-results .finals-group-compact {
+  grid-row:2;
+}
+.finals-columns:has(> .finals-division-results:first-child):has(> .finals-division-results:last-child) > .finals-division-results .finals-results-list {
+  grid-row:3;
+}
+@media (max-width:1100px) {
+  .finals-columns:has(> .finals-division-results:first-child):has(> .finals-division-results:last-child) {
+    grid-template-rows:none;
+  }
+  .finals-columns:has(> .finals-division-results:first-child):has(> .finals-division-results:last-child) > .finals-division-results {
+    display:flex;
+    grid-row:auto;
+  }
+  .finals-columns:has(> .finals-division-results:first-child):has(> .finals-division-results:last-child) > .finals-division-results > .finals-results {
+    display:flex;
+  }
+}
+
+/* Same configurable tournament-director tag used by the regular wallboard. */
+.finals-td-badge { display:inline-block; margin-right:.4em; padding:.08em .35em; border-radius:999px; background:rgba(250,204,21,.18); border:1px solid rgba(250,204,21,.55); color:#facc15; font-size:.72em; font-weight:950; letter-spacing:.06em; vertical-align:middle; white-space:nowrap; }

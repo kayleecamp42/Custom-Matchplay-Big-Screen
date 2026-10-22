@@ -1,0 +1,369 @@
+.checkin-page .wallboard {
+  height: 100vh;
+  display: grid;
+  grid-template-columns: minmax(0, 2.05fr) minmax(320px, 0.95fr);
+  gap: 0.75vw;
+  padding: 0.75vw;
+}
+
+.checkin-page .series-standings-list {
+  padding: 0.45vw;
+  overflow: hidden;
+  font-size: calc(1rem * var(--right-font));
+  position: relative;
+  height: 100%;
+}
+
+.checkin-page .series-standings-list.checkin-mode {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45vw;
+}
+
+.checkin-page .checkin-scroll-viewport {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.checkin-page .series-standings-inner {
+  will-change: transform;
+  transform: translateY(0);
+  padding-bottom: 1.2em;
+}
+
+.checkin-page .left-brand-panel {
+  height: 32vh;
+  padding: 0.65vw;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 0.65vw;
+  flex: 0 0 auto;
+}
+
+.checkin-page .left-brand-title {
+  text-align: center;
+  font-size: 1.9vw;
+  line-height: 0.95;
+  font-weight: 950;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.checkin-page .left-brand-subtitle {
+  color: var(--muted);
+  font-size: 0.9vw;
+  font-weight: 800;
+  margin-top: 0.3vw;
+}
+
+.checkin-page .brand-row {
+  display: grid;
+  grid-template-columns: 1fr minmax(0, 1.1fr) 1fr;
+  gap: 0.75vw;
+  align-items: center;
+  min-height: 0;
+  height: 100%;
+}
+
+.checkin-page .brand-row .qr-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.checkin-page .brand-row .qr-card img {
+  width: min(16vh, 100%);
+}
+
+.checkin-page .brand-logo-box {
+  width: 100%;
+  height: 100%;
+  max-height: 18vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.checkin-page .brand-logo-box img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  display: block;
+}
+
+.checkin-page .video-panel {
+  flex: 1;
+  min-height: 0;
+}
+
+.checkin-page .video-wrap {
+  width: 100%;
+  height: 100%;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.checkin-page .video-wrap iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.checkin-page .checkin-summary {
+  padding: 0.65vw;
+  margin-bottom: 0.45vw;
+  border-radius: 0.65vw;
+  background: rgba(74, 222, 128, 0.12);
+  border: 1px solid rgba(74, 222, 128, 0.28);
+  text-align: center;
+}
+
+.checkin-page .checkin-big {
+  font-size: 1.65em;
+  font-weight: 950;
+  color: var(--good);
+  line-height: 1;
+}
+
+.checkin-page .checkin-small {
+  color: var(--muted);
+  font-weight: 800;
+  margin-top: 0.25vw;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.checkin-page .progress-bar {
+  height: 0.65vw;
+  background: rgba(255,255,255,0.10);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-top: 0.55vw;
+}
+
+.checkin-page .progress-fill {
+  height: 100%;
+  background: var(--good);
+  border-radius: 999px;
+}
+
+.checkin-page .checkin-row {
+  display: grid;
+  grid-template-columns: 2.1em 1fr;
+  gap: 0.45vw;
+  align-items: center;
+  padding: 0.34vw 0.55vw;
+  border-radius: 0.55vw;
+  margin-bottom: 0.22vw;
+  background: rgba(255,255,255,0.045);
+  opacity: 0.62;
+}
+
+.checkin-page .checkin-row.checked-in,
+.checkin-page .checkin-row.checked-paid {
+  background: rgba(74, 222, 128, 0.16);
+  border: 1px solid rgba(74, 222, 128, 0.28);
+  opacity: 1;
+}
+
+.checkin-page .checkin-row.checked-only {
+  background: rgba(56, 189, 248, 0.14);
+  border: 1px solid rgba(56, 189, 248, 0.28);
+  opacity: 1;
+}
+
+.checkin-page .checkin-row.paid-only {
+  background: rgba(249, 115, 22, 0.14);
+  border: 1px solid rgba(249, 115, 22, 0.32);
+  opacity: 1;
+}
+
+.checkin-page .checkin-row.neither {
+  background: rgba(255,255,255,0.045);
+  opacity: 0.62;
+}
+
+.checkin-page .checkmark {
+  color: var(--good);
+  font-weight: 950;
+  text-align: center;
+  font-size: 1.05em;
+}
+
+.checkin-page .checkin-name {
+  font-weight: 850;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.checkin-page .standing-row {
+  display: grid;
+  grid-template-columns: 2.4em 1fr auto;
+  gap: 0.55vw;
+  align-items: center;
+  padding: 0.34vw 0.55vw;
+  border-radius: 0.55vw;
+  margin-bottom: 0.22vw;
+  background: rgba(255,255,255,0.045);
+}
+
+.checkin-page .standing-points {
+  white-space: nowrap;
+}
+
+.checkin-page .subpoints {
+  color: var(--muted);
+  font-size: 0.72em;
+  font-weight: 800;
+  margin-left: 0.3em;
+}
+
+.checkin-page .status-strip {
+  padding: 0.75vw 1vw;
+  background: rgba(0,0,0,0.34);
+  color: var(--muted);
+  font-size: 0.9em;
+  font-weight: 750;
+  display: flex;
+  justify-content: space-between;
+  gap: 1vw;
+}
+
+/* Priority check-in mode */
+.checkin-page .checkin-priority-layout {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: minmax(5.5em, auto) minmax(0, 1fr);
+  gap: 0.38vw;
+}
+
+.checkin-page .missing-checkin-section,
+.checkin-page .checked-checkin-section {
+  min-height: 0;
+  overflow: hidden;
+  border-radius: 0.65vw;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(0,0,0,0.16);
+  padding: 0.25vw;
+}
+
+.checkin-page .missing-checkin-section {
+  border-color: rgba(251, 113, 133, 0.28);
+  background: rgba(251, 113, 133, 0.07);
+  display: flex;
+  flex-direction: column;
+  max-height: 32vh;
+}
+
+.checkin-page .checked-checkin-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.checkin-page .checkin-section-title {
+  color: var(--danger);
+  font-size: 0.68em;
+  font-weight: 950;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin-bottom: 0.15vw;
+  line-height: 1;
+}
+
+.checkin-page .checkin-section-title.checked {
+  color: var(--good);
+}
+
+.checkin-page .missing-checkin-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.checkin-page .missing-checkin-section .series-standings-inner {
+  padding-top: 0.25vw;
+  padding-bottom: 2em;
+}
+
+.checkin-page .checked-checkin-section .checkin-scroll-viewport {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.checkin-page .checked-checkin-section .series-standings-inner {
+  padding-top: 0.25vw;
+  padding-bottom: 2em;
+}
+
+.standing-row.cutoff-gold,
+.wallboard-page .standing-row.top-finals {
+  background:
+    linear-gradient(120deg, rgba(250, 204, 21, 0.18), rgba(255, 255, 255, 0.05), rgba(250, 204, 21, 0.12));
+  border: 1px solid rgba(250, 204, 21, 0.35);
+  box-shadow: 0 0 14px rgba(250, 204, 21, 0.12);
+}
+
+.standing-row.cutoff-silver {
+  background:
+    linear-gradient(120deg, rgba(226, 232, 240, 0.16), rgba(255, 255, 255, 0.04), rgba(148, 163, 184, 0.12));
+  border: 1px solid rgba(226, 232, 240, 0.28);
+  box-shadow: 0 0 12px rgba(226, 232, 240, 0.10);
+}
+
+.cutoff-label {
+  margin-left: 0.45em;
+  color: var(--muted);
+  font-size: 0.68em;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.checkin-page .standing-row.cutoff-gold {
+  background:
+    linear-gradient(120deg, rgba(250, 204, 21, 0.18), rgba(255, 255, 255, 0.05), rgba(250, 204, 21, 0.12));
+  border: 1px solid rgba(250, 204, 21, 0.35);
+  box-shadow: 0 0 14px rgba(250, 204, 21, 0.12);
+}
+
+.checkin-page .standing-row.cutoff-silver {
+  background:
+    linear-gradient(120deg, rgba(226, 232, 240, 0.16), rgba(255, 255, 255, 0.04), rgba(148, 163, 184, 0.12));
+  border: 1px solid rgba(226, 232, 240, 0.28);
+  box-shadow: 0 0 12px rgba(226, 232, 240, 0.10);
+}
+
+.checkin-page .standing-row.cutoff-boundary {
+  margin-top: 0.85vw;
+  position: relative;
+}
+
+.checkin-page .standing-row.cutoff-boundary::before {
+  content: attr(data-cutoff-label);
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -0.62vw;
+  height: 1px;
+  border-top: 2px solid rgba(255, 255, 255, 0.34);
+  color: var(--muted);
+  font-size: 0.62em;
+  font-weight: 950;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  line-height: 0;
+  padding-top: 0;
+}
