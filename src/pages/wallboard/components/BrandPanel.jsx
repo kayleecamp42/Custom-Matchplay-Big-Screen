@@ -1,5 +1,6 @@
 import { useState } from "react";
 import QrCard from "../../../components/QrCard.jsx";
+import { settings } from "../../../config.js";
 
 export default function BrandPanel({ brandTitle, tournamentName, qrLabel, tournamentQrUrl, discordQrUrl, onAdjustFont }) {
   const [logoError, setLogoError] = useState(false);
@@ -17,14 +18,14 @@ export default function BrandPanel({ brandTitle, tournamentName, qrLabel, tourna
 
       <div className="logo-box">
         {logoError ? (
-          <span>Logo file:<br /><strong>super-abari-logo.png</strong></span>
+          <span>Logo not found: {settings.logoUrl}</span>
         ) : (
-          <img src="/super-abari-logo.png" alt="Super Abari Logo" onError={() => setLogoError(true)} />
+          <img src={settings.logoUrl} alt={`${settings.venueName} logo`} onError={() => setLogoError(true)} />
         )}
       </div>
 
       <div className="qr-stack">
-        <QrCard label="Super Abari Discord" src={discordQrUrl} alt="Discord QR" />
+        <QrCard label={settings.communityLabel} src={discordQrUrl} alt="Community QR" />
       </div>
 
       <div className="font-controls">

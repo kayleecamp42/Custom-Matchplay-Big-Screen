@@ -2,9 +2,10 @@ import { useEffect, useRef, useState } from "react";
 import { createApiGet } from "../../api.js";
 import QrCard from "../../components/QrCard.jsx";
 import "./Finals.css";
+import { settings, getDirectorNames, getCommunityUrl } from "../../config.js";
 
 const api = createApiGet(new URLSearchParams(location.search).get("api") || "http://localhost:8787/api", "proxy");
-const discord = "https://discord.gg/ZERd3dXwtV";
+const discord = getCommunityUrl();
 const qr = (url) => `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(url)}`;
 const unwrap = (v) => v?.data ?? v;
 const scoreText = (v) => v == null ? "—" : String(Math.round(Number(v)));
@@ -93,8 +94,7 @@ function finalRoundPlacements(ids, games, tiebreakers) {
   return placements;
 }
 
-const readTdNames = () => new Set((localStorage.getItem("td-player-names") || "")
-  .split("\n").map(name => name.trim().toLowerCase()).filter(Boolean));
+const readTdNames = getDirectorNames;
 
 function TdName({ name, tdNames }) {
   return <>{tdNames.has(String(name).trim().toLowerCase()) && <span className="finals-td-badge">TD</span>}{name}</>;
@@ -191,9 +191,9 @@ function FinalResults({ label, data, games, tiebreakers, round, tdNames }) {
       <div className="finals-results-heading">FINAL STANDINGS</div>
       {topFour.map((s,i) => <div key={s.playerId} className={`finals-placement finals-place-${i+1}`}>
         <span className="finals-place-rank">{s.position}{Number(s.position)===1?'ST':Number(s.position)===2?'ND':Number(s.position)===3?'RD':'TH'}</span>
-        {i===0 && (label === 'A' ? <img className="finals-winner-belt" src="/championship-belt.png" alt="Championship belt"/> : <span className="finals-cash" aria-label="Cash prize">💵</span>)}
+        {i===0 && (label === 'A' ? settings.finals.championImageUrl && <img className="finals-winner-belt" src={settings.finals.championImageUrl} alt="Champion artwork"/> : settings.finals.winnerBIcon && <span className="finals-cash" aria-label="Division B prize">{settings.finals.winnerBIcon}</span>)}
         <strong><TdName name={players.get(String(s.playerId)) || `Player ${s.playerId}`} tdNames={tdNames} /></strong>
-        {i===0 && <span className="finals-winner-subtitle">{label==='A'?'CHAMPION':'17TH PLACE'}</span>}
+        {i===0 && <span className="finals-winner-subtitle">{label==='A'?settings.finals.winnerAText:settings.finals.winnerBText}</span>}
       </div>)}
       <div className="finals-other-placements">{ordered.slice(4).map(s => <div key={s.playerId}><span>{s.position}.</span><span><TdName name={players.get(String(s.playerId)) || `Player ${s.playerId}`} tdNames={tdNames} /></span></div>)}</div>
     </section> : <div className="finals-results-pending">Final games complete · waiting for official Match Play placements</div>}
@@ -258,7 +258,7 @@ function divisionFinalComplete(data) {
 export default function Finals() {
   const a = sessionStorage.getItem("tournament") || "";
   const b = sessionStorage.getItem("finalsB") || "";
-  const title = sessionStorage.getItem("finalsTitle") || "Super Abari Pinball League Finals";
+  const title = sessionStorage.getItem("finalsTitle") || settings.finalsTitle;
   const [data,setData]=useState({});
   const [errors,setErrors]=useState({});
   const [lastUpdated,setLastUpdated]=useState(null);
@@ -308,9 +308,9 @@ export default function Finals() {
   },[a,b]);
   return <main className="finals-page">
     <header className="finals-header">
-      <div className="finals-heading"><div className="finals-kicker">SUPER ABARI GAME BAR</div><h1>{title}</h1><p>Live A &amp; B Division Finals</p></div>
-      <img className="finals-belt" src="/championship-belt.png" alt="Super Abari championship belt" />
-      <div className="finals-qrs"><QrCard label="A Division" src={qr(`https://app.matchplay.events/tournaments/${a}`)} alt="A Division QR"/><QrCard label="B Division" src={qr(`https://app.matchplay.events/tournaments/${b}`)} alt="B Division QR"/><QrCard label="Discord" src={qr(discord)} alt="Discord QR"/></div>
+      <div className="finals-heading"><div className="finals-kicker">{settings.venueName}</div><h1>{title}</h1><p>Live A &amp; B Division Finals</p></div>
+      {settings.finals.headerImageUrl && <img className="finals-belt" src={settings.finals.headerImageUrl} alt="Championship artwork" />}
+      <div className="finals-qrs"><QrCard label="A Division" src={qr(`https://app.matchplay.events/tournaments/${a}`)} alt="A Division QR"/><QrCard label="B Division" src={qr(`https://app.matchplay.events/tournaments/${b}`)} alt="B Division QR"/><QrCard label={settings.communityLabel} src={qr(discord)} alt="Community QR"/></div>
     </header>
     <div className="finals-columns"><Division label="A" data={data.A} error={errors.A} tdNames={tdNames}/><Division label="B" data={data.B} error={errors.B} tdNames={tdNames}/></div>
     <footer className="finals-footer">{lastUpdated ? `Updated ${lastUpdated.toLocaleTimeString()} · ${(!a || frozen.current.A) && (!b || frozen.current.B) ? "Final results locked · Refresh page to reload" : "Live divisions refresh every 15 seconds"}` : "Connecting to Match Play…"}</footer>

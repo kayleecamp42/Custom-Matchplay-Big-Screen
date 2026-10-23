@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 460" role="img" aria-label="Generic championship trophy">
+<defs><linearGradient id="gold" x1="0" x2="0" y1="0" y2="1"><stop stop-color="#fff1a6"/><stop offset=".55" stop-color="#f9c553"/><stop offset="1" stop-color="#a85c16"/></linearGradient></defs>
+<g fill="url(#gold)" stroke="#67400d" stroke-width="11" stroke-linejoin="round">
+<path d="M335 68h210v109c0 85-40 143-105 143s-105-58-105-143z"/>
+<path d="M333 93H248v60c0 77 50 110 108 105l-17-42c-34 0-46-21-46-62v-15h40z"/>
+<path d="M547 93h85v60c0 77-50 110-108 105l17-42c34 0 46-21 46-62v-15h-40z"/>
+<path d="M420 319h40v52h-40zM361 368h158v29H361zM337 395h206v24H337z"/>
+</g><path d="m440 112 15 32 36 5-26 25 6 36-31-17-31 17 6-36-26-25 36-5z" fill="#fff4be"/>
+<text x="440" y="53" font-size="33" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="800" fill="#fff2bd" letter-spacing="7">CHAMPIONSHIP</text>
+</svg>

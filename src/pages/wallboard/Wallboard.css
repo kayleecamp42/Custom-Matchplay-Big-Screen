@@ -307,3 +307,25 @@
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
+/* Official standings medals. Apply by placement number, never by row index:
+   a tie for 3rd gets two bronze rows and no 4th-place purple row. */
+.wallboard-page .standing-row.standing-place-1 {
+  background: linear-gradient(120deg, rgba(250, 204, 21, .23), rgba(250, 204, 21, .07));
+  border: 1px solid rgba(250, 204, 21, .65);
+  box-shadow: 0 0 14px rgba(250, 204, 21, .16);
+}
+.wallboard-page .standing-row.standing-place-2 {
+  background: linear-gradient(120deg, rgba(226, 232, 240, .22), rgba(148, 163, 184, .06));
+  border: 1px solid rgba(203, 213, 225, .56);
+  box-shadow: 0 0 12px rgba(203, 213, 225, .10);
+}
+.wallboard-page .standing-row.standing-place-3 {
+  background: linear-gradient(120deg, rgba(205, 127, 50, .28), rgba(154, 82, 35, .08));
+  border: 1px solid rgba(205, 127, 50, .64);
+  box-shadow: 0 0 12px rgba(205, 127, 50, .12);
+}
+.wallboard-page .standing-row.standing-place-4 {
+  background: linear-gradient(120deg, rgba(168, 85, 247, .25), rgba(107, 33, 168, .07));
+  border: 1px solid rgba(168, 85, 247, .60);
+  box-shadow: 0 0 12px rgba(168, 85, 247, .12);
+}

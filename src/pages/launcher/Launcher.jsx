@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Launcher.css";
+import { settings } from "../../config.js";
 
 function saveSession({
   mode,
@@ -36,7 +37,7 @@ export default function Launcher() {
   const [cutoff2Size, setCutoff2Size] = useState(() => sessionStorage.getItem("cutoff2Size") || "16");
 
   const [bTournamentId, setBTournamentId] = useState(() => sessionStorage.getItem("finalsB") || "");
-  const [finalsTitle, setFinalsTitle] = useState(() => sessionStorage.getItem("finalsTitle") || "Super Abari Pinball League Finals");
+  const [finalsTitle, setFinalsTitle] = useState(() => sessionStorage.getItem("finalsTitle") || settings.finalsTitle);
   const [error, setError] = useState("");
 
   function validate() {
@@ -93,7 +94,7 @@ export default function Launcher() {
   return (
     <div className="launcher-bg">
       <main className="launcher-card">
-        <h1 className="launcher-title">Super Abari Wallboard</h1>
+        <h1 className="launcher-title">{settings.appTitle}</h1>
         <p className="launcher-subtitle">Choose the event type and enter the Match Play IDs.</p>
 
         <label className="launcher-label">Event Type</label>

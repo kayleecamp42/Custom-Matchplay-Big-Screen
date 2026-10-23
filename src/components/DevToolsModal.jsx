@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { isMockMode } from "../api.js";
+import "./DevToolsModal.css";
 
 const PAGES = [
   { label: "Launcher", path: "/" },
   { label: "Check-In", path: "/checkin" },
   { label: "Wallboard", path: "/wallboard" },
+  { label: "Finals", path: "/finals" },
 ];
 
 const SECTION_LABEL = {
@@ -19,6 +21,8 @@ const SECTION_LABEL = {
 
 const OPTION_ROW = {
   display: "flex",
+  flexWrap: "wrap",
+  gap: "0.65rem",
   justifyContent: "space-between",
   alignItems: "center",
   padding: "0.6rem 0.85rem",
@@ -31,12 +35,14 @@ const OPTION_ROW = {
 function Toggle({ active, onToggle }) {
   return (
     <button
+      type="button"
+      className="devtools-toggle"
       onClick={() => onToggle(!active)}
       aria-pressed={active}
       style={{
         position: "relative",
-        width: "44px",
-        height: "24px",
+        width: "52px",
+        height: "32px",
         borderRadius: "999px",
         border: "none",
         background: active ? "#facc15" : "rgba(255,255,255,0.18)",
@@ -48,10 +54,10 @@ function Toggle({ active, onToggle }) {
       <span
         style={{
           position: "absolute",
-          top: "3px",
-          left: active ? "23px" : "3px",
-          width: "18px",
-          height: "18px",
+          top: "2px",
+          left: active ? "22px" : "2px",
+          width: "28px",
+          height: "28px",
           borderRadius: "50%",
           background: active ? "#09090b" : "#f4f4f5",
           transition: "left 0.15s",
@@ -64,24 +70,17 @@ function Toggle({ active, onToggle }) {
 
 function SegmentedControl({ options, value, onChange }) {
   return (
-    <div style={{ display: "flex", gap: "0.35rem" }}>
+    <div className="devtools-segments" style={{ display: "flex", flexWrap: "wrap", gap: "0.35rem" }}>
       {options.map(opt => {
         const active = value === opt.value;
 
         return (
           <button
+            type="button"
             key={opt.value}
+            className={`devtools-segment-button${active ? " is-active" : ""}`}
+            aria-pressed={active}
             onClick={() => !active && onChange(opt.value)}
-            style={{
-              padding: "0.3rem 0.65rem",
-              borderRadius: "6px",
-              border: `1px solid ${active ? "rgba(250,204,21,0.5)" : "rgba(255,255,255,0.12)"}`,
-              background: active ? "rgba(250,204,21,0.12)" : "transparent",
-              color: active ? "#facc15" : "#a1a1aa",
-              fontWeight: 800,
-              fontSize: "0.78em",
-              cursor: active ? "default" : "pointer",
-            }}
           >
             {opt.label}
           </button>
@@ -159,52 +158,35 @@ export default function DevToolsModal() {
     window.dispatchEvent(new CustomEvent("td-list-changed"));
   }
 
-  if (!open) return null;
-
   return (
     <>
-      <div
-        onClick={() => setOpen(false)}
-        style={{
-          position: "fixed",
-          inset: 0,
-          background: "rgba(0,0,0,0.55)",
-          backdropFilter: "blur(3px)",
-          zIndex: 10000,
-        }}
-      />
-
-      <div
-        style={{
-          position: "fixed",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          background: "#17171d",
-          border: "1px solid rgba(255,255,255,0.12)",
-          borderRadius: "12px",
-          padding: "1.25rem",
-          width: "380px",
-          zIndex: 10001,
-          boxShadow: "0 24px 60px rgba(0,0,0,0.5)",
-          color: "#f4f4f5",
-          fontFamily: "Arial, Helvetica, sans-serif",
-          maxHeight: "90vh",
-          overflowY: "auto",
-        }}
+      <button
+        type="button"
+        className="devtools-launch-button"
+        onClick={() => setOpen(true)}
+        aria-label="Open display settings"
+        aria-haspopup="dialog"
+        aria-expanded={open}
+        title="Display settings (Ctrl+K)"
       >
-        <div
-          style={{
-            fontWeight: 900,
-            fontSize: "0.8em",
-            letterSpacing: "0.08em",
-            textTransform: "uppercase",
-            color: "#facc15",
-            marginBottom: "1rem",
-          }}
-        >
-          Dev Tools
-        </div>
+        <span aria-hidden="true">⚙</span>
+      </button>
+      {open && (<>
+      <div className="devtools-backdrop" onClick={() => setOpen(false)} />
+      <section
+        className="devtools-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="devtools-heading"
+      >
+        <header className="devtools-dialog-header">
+          <div>
+            <strong id="devtools-heading">Display Settings</strong>
+            <small>Ctrl+K · Changes apply to this browser</small>
+          </div>
+          <button type="button" className="devtools-close" onClick={() => setOpen(false)} aria-label="Close settings">✕</button>
+        </header>
+        <div className="devtools-dialog-content">
 
         <div
           style={{
@@ -223,25 +205,17 @@ export default function DevToolsModal() {
 
         <div style={{ marginTop: "0.75rem" }}>
           <div style={SECTION_LABEL}>Navigate</div>
-          <div style={{ display: "flex", gap: "0.5rem" }}>
+          <div className="devtools-navigation">
             {PAGES.map(({ label, path }) => {
               const active = pathname === path;
 
               return (
                 <button
+                  type="button"
                   key={path}
+                  className={`devtools-navigation-button${active ? " is-active" : ""}`}
+                  aria-current={active ? "page" : undefined}
                   onClick={() => goTo(path)}
-                  style={{
-                    flex: 1,
-                    padding: "0.55rem",
-                    borderRadius: "8px",
-                    border: `1px solid ${active ? "rgba(250,204,21,0.4)" : "rgba(255,255,255,0.1)"}`,
-                    background: active ? "rgba(250,204,21,0.1)" : "rgba(255,255,255,0.05)",
-                    color: active ? "#facc15" : "#f4f4f5",
-                    fontWeight: 800,
-                    fontSize: "0.82em",
-                    cursor: active ? "default" : "pointer",
-                  }}
                 >
                   {label}
                 </button>
@@ -305,7 +279,7 @@ export default function DevToolsModal() {
             <textarea
               value={tdText}
               onChange={e => saveTdList(e.target.value)}
-              placeholder={"One TD name per line\nKaylee Campbell\nBill Mason"}
+              placeholder={"One TD name per line\nTournament Director Name"}
               style={{
                 width: "100%",
                 minHeight: "90px",
@@ -322,7 +296,9 @@ export default function DevToolsModal() {
             />
           </div>
         </div>
-      </div>
+        </div>
+      </section>
+      </>)}
     </>
   );
 }

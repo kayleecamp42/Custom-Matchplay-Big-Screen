@@ -9,10 +9,11 @@ import StatusStrip from "../../components/StatusStrip.jsx";
 import CheckinPanel from "./components/CheckinPanel.jsx";
 import SeriesStandingsPanel from "./components/SeriesStandingsPanel.jsx";
 import "./Checkin.css";
+import { settings, getCommunityUrl } from "../../config.js";
 
 const API_BASE = new URLSearchParams(window.location.search).get("api") || "http://localhost:8787/api";
 const MATCHPLAY_BASE = "https://app.matchplay.events";
-const DISCORD_URL = "https://discord.gg/ZERd3dXwtV";
+const DISCORD_URL = getCommunityUrl();
 const REFRESH_MS = 60000;
 const FAST_POLL_MS = 10000;
 const ROTATION_MS = 60000;
@@ -188,7 +189,7 @@ export default function Checkin() {
     const series = payload?.data || payload;
     if (!series) return;
 
-    setEventTitle("Super Abari Pinball League");
+    setEventTitle(settings.leagueTitle);
     setEventSubtitle(series.name || `Series ${session.seriesId}`);
 
     normalizeRows(series.players || series.registeredPlayers || series.registered_players || [])
@@ -268,7 +269,7 @@ export default function Checkin() {
       setEventTitle(`Tournament ${session.tournamentId}`);
       setEventSubtitle("Loading start time...");
     } else {
-      setEventTitle("Super Abari Pinball League");
+      setEventTitle(settings.leagueTitle);
       setEventSubtitle(`Series ${session.seriesId}`);
     }
 
@@ -331,26 +332,26 @@ export default function Checkin() {
               <QrCard label="Register" src={registrationQrUrl} alt="Registration QR" />
               <div className="logo-box brand-logo-box">
                 {logoError ? (
-                  <span>Logo file:<br /><strong>super-abari-logo.png</strong></span>
+                  <span>Logo not found: {settings.logoUrl}</span>
                 ) : (
-                  <img src="/super-abari-logo.png" alt="Super Abari Logo" onError={() => setLogoError(true)} />
+                  <img src={settings.logoUrl} alt={`${settings.venueName} logo`} onError={() => setLogoError(true)} />
                 )}
               </div>
-              <QrCard label="Super Abari Discord" src={discordQrUrl} alt="Discord QR" />
+              <QrCard label={settings.communityLabel} src={discordQrUrl} alt="Community QR" />
             </div>
           </div>
 
-          <div className="panel video-panel">
+          {settings.playlistId && <div className="panel video-panel">
             <div className="video-wrap">
               <iframe
                 referrerPolicy="strict-origin-when-cross-origin"
-                src="https://www.youtube-nocookie.com/embed/videoseries?list=PLws6SPocL-bOeA2zePM1W7NpxH-V6zyiW&autoplay=1&mute=1&loop=1&playlist=PLws6SPocL-bOeA2zePM1W7NpxH-V6zyiW&controls=0&rel=0&modestbranding=1&playsinline=1&cc_load_policy=1&hl=en&iv_load_policy=3"
-                title="Super Abari playlist"
+                src={`https://www.youtube-nocookie.com/embed/videoseries?list=${encodeURIComponent(settings.playlistId)}&autoplay=1&mute=1&loop=1&playlist=${encodeURIComponent(settings.playlistId)}&controls=0&rel=0&modestbranding=1&playsinline=1&cc_load_policy=1&hl=en&iv_load_policy=3`}
+                title={`${settings.venueName} playlist`}
                 allow="autoplay; encrypted-media; picture-in-picture"
                 allowFullScreen
               />
             </div>
-          </div>
+          </div>}
         </section>
 
         <section className="column right">

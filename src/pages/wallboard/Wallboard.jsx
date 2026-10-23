@@ -19,16 +19,19 @@ import StatusStrip from "../../components/StatusStrip.jsx";
 import GameCard from "./components/GameCard.jsx";
 import BrandPanel from "./components/BrandPanel.jsx";
 import "./Wallboard.css";
+import { settings, getDirectorNames, getCommunityUrl } from "../../config.js";
+import { tournamentEndReason, isClosedStatus } from "../../tournamentCompletion.mjs";
 
 const urlParams = new URLSearchParams(window.location.search);
 const API_BASE = urlParams.get("api") || "http://localhost:8787/api";
 const API_TOKEN = urlParams.get("token") || localStorage.getItem("MATCHPLAY_TOKEN") || "proxy";
 const MATCHPLAY_BASE = "https://app.matchplay.events";
-const DISCORD_URL = "https://discord.gg/ZERd3dXwtV";
+const DISCORD_URL = getCommunityUrl();
 const WEBSOCKET_URL = "wss://ws.app.matchplay.events/app/tnrxzkahdeullnwje83e?protocol=7&client=js&version=8.5.0&flash=false";
 const MAX_STANDINGS = 100;
 const MAX_GAMES = 15;
 const LIVE_REFRESH_MS = 30000;
+const COMPLETION_CHECK_MS = 60000;
 const SCROLL_CONFIG = { topPauseMs: 10000, scrollMs: 20000, bottomPauseMs: 5000 };
 
 const apiGet = createApiGet(API_BASE, API_TOKEN);
@@ -46,14 +49,7 @@ function normalizePayload(raw) {
   return parsed;
 }
 
-function loadTdNames() {
-  return new Set(
-    (localStorage.getItem("td-player-names") || "")
-      .split("\n")
-      .map(n => n.trim().toLowerCase())
-      .filter(Boolean)
-  );
-}
+function loadTdNames() { return getDirectorNames(); }
 
 function standingSortValue(row, tournamentType) {
   if (tournamentType === "group-knockout") {
@@ -90,6 +86,10 @@ export default function Wallboard() {
   const [tick, setTick] = useState(0);
 
   const tournamentIdRef = useRef(session.tournamentId);
+  const frozenRef = useRef(false);
+  const completionInFlightRef = useRef(false);
+  const socketRef = useRef(null);
+  const tournamentRef = useRef(null);
   const seriesRegistrationUrlRef = useRef("");
   const standingsContainerRef = useRef(null);
   const standingsInnerRef = useRef(null);
@@ -141,15 +141,15 @@ export default function Wallboard() {
   }, []);
 
   const refreshStandings = useCallback(async () => {
-    if (!tournamentIdRef.current) return;
+    if (!tournamentIdRef.current || frozenRef.current) return;
     const data = await apiGet(`/tournaments/${tournamentIdRef.current}/standings`);
-    if (data) setStandings(data.data || data);
+    if (data && !frozenRef.current) setStandings(data.data || data);
   }, []);
 
   const refreshCurrentGames = useCallback(async () => {
-    if (!tournamentIdRef.current) return;
+    if (!tournamentIdRef.current || frozenRef.current) return;
     const data = await apiGet(`/tournaments/${tournamentIdRef.current}/games`, { round: "activeOrLatest" });
-    if (data) {
+    if (data && !frozenRef.current) {
       const rows = normalizeApiRows(data);
       debugLog(`Refreshed ${rows.length} games`, rows);
       setGames(() => {
@@ -161,6 +161,7 @@ export default function Wallboard() {
   }, [debugLog]);
 
   const hydrateInitialData = useCallback(async () => {
+    if (frozenRef.current) return;
     if (!tournamentIdRef.current) {
       try {
         const tournaments = await apiGet(`/tournaments`, { series: session.seriesId, status: "started" });
@@ -193,8 +194,10 @@ export default function Wallboard() {
       apiGet(`/tournaments/${tournamentIdRef.current}/games`, { round: "activeOrLatest" }),
     ]);
 
+    if (frozenRef.current) return;
     if (tournamentData) {
       const t = tournamentData.data || tournamentData;
+      tournamentRef.current = t;
       setTournament(t);
       hydratePlayersAndArenas(t);
     }
@@ -209,6 +212,53 @@ export default function Wallboard() {
       return m;
     });
   }, [session, debugLog, hydratePlayersAndArenas]);
+
+  // One additional rounds check per minute while live. Only freeze after
+  // final-round closure AND a successful last standings + games snapshot.
+  // A failed request leaves the display live so it can retry on the next check.
+  const checkForCompletedTournament = useCallback(async () => {
+    if (frozenRef.current || completionInFlightRef.current || !tournamentIdRef.current) return;
+    completionInFlightRef.current = true;
+    const id = tournamentIdRef.current;
+    try {
+      // Tournament metadata is refreshed here because a live event may have
+      // increased its planned round count since our initial hydration.
+      const [detailsResponse, roundsResponse] = await Promise.all([
+        apiGet(`/tournaments/${id}`),
+        apiGet(`/tournaments/${id}/rounds`),
+      ]);
+      if (!detailsResponse || !roundsResponse || frozenRef.current) return;
+      const details = detailsResponse.data || detailsResponse;
+      const rounds = normalizeApiRows(roundsResponse);
+      if (!details || !rounds.length) return;
+      // Standings are needed for knockout completion: a single player must be
+      // below the configured strike limit once the current round has closed.
+      const standingsResponse = await apiGet(`/tournaments/${id}/standings`);
+      if (!standingsResponse || frozenRef.current) return;
+      const finalStandings = normalizeApiRows(standingsResponse);
+      if (!finalStandings.length || !finalStandings.some(row => row.position != null)) return;
+      const endReason = tournamentEndReason(details, rounds, finalStandings);
+      if (!endReason) return;
+
+      const gamesResponse = await apiGet(`/tournaments/${id}/games`, { round: "activeOrLatest" });
+      if (!gamesResponse || frozenRef.current) return;
+      const finalGames = normalizeApiRows(gamesResponse);
+      if (!finalGames.length || finalGames.some(game => !isCompletedGame(game))) return;
+      // Use the official final standings. No further API fetches or WS
+      // reconnects after this snapshot (until the browser page is refreshed).
+      frozenRef.current = true;
+      socketRef.current?.close();
+      tournamentRef.current = details;
+      setTournament(details);
+      setStandings(finalStandings);
+      setGames(new Map(finalGames.map(game => [gameId(game), game])));
+      setConnectionStatus(`Final standings locked (${endReason}) · Tournament ${id} · Refresh browser to reload`);
+    } catch (err) {
+      debugLog("Tournament completion check failed; polling will retry", String(err));
+    } finally {
+      completionInFlightRef.current = false;
+    }
+  }, [debugLog]);
 
   useEffect(() => {
     loadFontSettings(["left", "center", "right"], "font");
@@ -240,6 +290,7 @@ export default function Wallboard() {
 
   useEffect(() => {
     const interval = setInterval(() => {
+      if (frozenRef.current) { clearInterval(interval); return; }
       refreshCurrentGames();
       refreshStandings();
     }, LIVE_REFRESH_MS);
@@ -248,13 +299,24 @@ export default function Wallboard() {
   }, [refreshCurrentGames, refreshStandings]);
 
   useEffect(() => {
+    // Also run at startup for wallboards opened after the final round closed.
+    checkForCompletedTournament();
+    const interval = setInterval(() => {
+      if (frozenRef.current) { clearInterval(interval); return; }
+      checkForCompletedTournament();
+    }, COMPLETION_CHECK_MS);
+    return () => clearInterval(interval);
+  }, [checkForCompletedTournament]);
+
+  useEffect(() => {
     let ws;
     let cancelled = false;
 
     function connect() {
-      if (cancelled || !tournamentIdRef.current) return;
+      if (cancelled || frozenRef.current || !tournamentIdRef.current) return;
 
       ws = new WebSocket(WEBSOCKET_URL);
+      socketRef.current = ws;
 
       ws.onopen = () => {
         debugLog("Websocket connected");
@@ -266,6 +328,7 @@ export default function Wallboard() {
       };
 
       ws.onmessage = async (event) => {
+        if (frozenRef.current) { ws?.close(); return; }
         const message = normalizePayload(event.data);
         debugLog("WS", message.event, message.data);
 
@@ -273,10 +336,13 @@ export default function Wallboard() {
 
         switch (name) {
           case "TournamentUpdated":
+            tournamentRef.current = data;
             setTournament(data);
+            if (isClosedStatus(data?.status ?? data?.state)) checkForCompletedTournament();
             break;
 
           case "RoundCreatedOrUpdated":
+            checkForCompletedTournament();
             refreshCurrentGames();
             refreshStandings();
             break;
@@ -322,9 +388,10 @@ export default function Wallboard() {
       };
 
       ws.onclose = () => {
+        if (frozenRef.current || cancelled) return;
         setConnectionStatus("Disconnected · retrying soon");
         debugLog("Websocket disconnected. Retrying in 5s.");
-        if (!cancelled) setTimeout(connect, 5000);
+        if (!cancelled && !frozenRef.current) setTimeout(connect, 5000);
       };
     }
 
@@ -334,7 +401,7 @@ export default function Wallboard() {
       cancelled = true;
       ws?.close();
     };
-  }, [debugLog, hydrateInitialData, refreshCurrentGames, refreshStandings]);
+  }, [debugLog, hydrateInitialData, refreshCurrentGames, refreshStandings, checkForCompletedTournament]);
 
   const started = isTournamentStarted(tournament);
   const tournamentUrl = tournamentIdRef.current
@@ -351,7 +418,7 @@ export default function Wallboard() {
 
   const brandTitle = isTournamentMode
     ? (tournament?.name || `Tournament ${tournamentIdRef.current}`)
-    : "Super Abari<br />Pinball League";
+    : settings.leagueTitle;
 
   const tournamentSubtitle = isTournamentMode
     ? (startText ? `Starts ${startText}` : "Single Tournament")
@@ -376,13 +443,31 @@ export default function Wallboard() {
     .slice(0, MAX_GAMES);
 
   const rawStandingRows = Array.isArray(standings) ? standings : [];
-  const sortedStandingRows = [...rawStandingRows].sort(
-    (a, b) => standingSortValue(b, session.tournamentType) - standingSortValue(a, session.tournamentType)
-  );
-  const standingRows = calculateCompetitionRanks(
-    sortedStandingRows,
-    row => standingSortValue(row, session.tournamentType)
-  );
+  // Match Play computes official standings, including knockout elimination-round ties.
+  // Never derive knockout rank from current strike counts: most active players
+  // share a strike total, and doing so incorrectly assigns all of them rank 1.
+  const isKnockout = session.tournamentType === "group-knockout";
+  const officialPositionsAvailable = rawStandingRows.length > 0 &&
+    rawStandingRows.every(row => Number.isFinite(Number(row.position)) && Number(row.position) > 0);
+  const standingRows = officialPositionsAvailable
+    ? [...rawStandingRows]
+        .sort((a, b) => Number(a.position) - Number(b.position))
+        .map(row => ({ ...row, _rank: Number(row.position) }))
+    : isKnockout
+      // If an API response omits positions, preserve its row order rather
+      // than inventing ties from strikes. Do not misrepresent them as official.
+      ? rawStandingRows.map((row, index) => ({ ...row, _rank: index + 1 }))
+      : calculateCompetitionRanks(
+          [...rawStandingRows].sort((a, b) => standingSortValue(b, session.tournamentType) - standingSortValue(a, session.tournamentType)),
+          row => standingSortValue(row, session.tournamentType)
+        );
+  // In knockout, many active players can share an interim position of 1.
+  // Avoid colouring a giant active tie; otherwise colour by the actual
+  // official placement so tied finishers receive the same medal colour.
+  const rankCounts = new Map();
+  for (const row of standingRows) {
+    rankCounts.set(row._rank, (rankCounts.get(row._rank) || 0) + 1);
+  }
 
   void tick;
   void debugLogs;
@@ -464,7 +549,9 @@ export default function Wallboard() {
                   {standingRows.slice(0, MAX_STANDINGS).map((row, i) => {
                     const player = row.player || row;
                     const rank = row._rank;
-                    const topClass = rank <= 4 ? "top-finals" : "";
+                    const showPlaceColor = Number.isInteger(rank) && rank >= 1 && rank <= 4 &&
+                      (!isKnockout || (rankCounts.get(rank) || 0) <= 4);
+                    const topClass = showPlaceColor ? `standing-place-${rank}` : "";
                     const points = standingValue(row, session.tournamentType);
                     const hasStrikes = String(points).includes("X");
                     const name = resolvePlayerName(

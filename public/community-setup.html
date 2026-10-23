@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Configure your community QR code · Custom Matchplay Big Screen</title>
+  <style>
+    :root{color-scheme:dark;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;background:#101522;color:#f5f5f9;display:grid;place-items:center;padding:24px}
+    main{max-width:620px;width:100%;padding:clamp(26px,5vw,48px);background:#1d2638;border:1px solid #39435a;border-radius:20px;box-shadow:0 15px 60px #0005}
+    .tag{display:inline-block;color:#ffa3d0;font-size:.78rem;font-weight:800;letter-spacing:.15em;text-transform:uppercase;margin-bottom:12px}
+    h1{font-size:clamp(1.7rem,5vw,2.4rem);line-height:1.12;margin:0 0 18px}p{line-height:1.65;color:#dae0ec}
+    code{background:#0c1220;color:#ffabd4;padding:3px 6px;border-radius:5px;overflow-wrap:anywhere}
+    .example{padding:16px;background:#0c1220;border-radius:9px;border:1px solid #39435a;line-height:1.7;overflow-wrap:anywhere}
+    .foot{font-size:.88rem;color:#aab6ca;margin-top:24px}
+  </style>
+</head>
+<body>
+  <main>
+    <span class="tag">Community QR placeholder</span>
+    <h1>Your tournament community belongs here!</h1>
+    <p>This QR code is a placeholder. The tournament director should configure it to point to a place where players can connect, such as a <strong>Discord server</strong>, <strong>Facebook group</strong>, or another community gathering location.</p>
+    <p>To change it, open <code>src/config.js</code> in the Custom Matchplay Big Screen project and set <code>communityUrl</code> to your full community link:</p>
+    <div class="example"><code>communityUrl: "https://discord.gg/your-invite",</code></div>
+    <p>Set <code>communityLabel</code> to the name you'd like shown above the QR code. Save the file and refresh the display.</p>
+    <p class="foot">This is a local page served by the app. For phones to scan the placeholder QR, the display must be opened using a network address reachable from those phones rather than localhost.</p>
+  </main>
+</body>
+</html>
