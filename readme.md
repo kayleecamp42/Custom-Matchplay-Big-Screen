@@ -255,7 +255,7 @@ Custom Matchplay Big Screen is a free, open-source project developed and shared 
 
 If you find it useful and would like to buy me a coffee, beer, or a few extra pinball credits, optional donations are always appreciated!
 
-**[Support the project via PayPal](https://paypal.me/YOUR_PAYPAL_USERNAME)**
+**[Support the project via PayPal](https://paypal.me/kayleecamp42)**
 
 Donations are completely optional and do not come with any expectation of additional features, technical support, or ongoing maintenance.
 
