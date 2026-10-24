@@ -1,0 +1,46 @@
+name: Feature request
+description: Suggest an improvement or volunteer to contribute one
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the idea! This is a volunteer-maintained project. Feature requests are welcome, but implementation and ongoing support are not guaranteed. Pull requests are encouraged.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem would this solve?
+      description: Describe the tournament-director workflow or limitation.
+    validations:
+      required: true
+  - type: textarea
+    id: proposed
+    attributes:
+      label: Suggested solution
+      description: Explain the behavior you'd like to see.
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area of the application
+      options:
+        - Single Tournament / Wallboard
+        - League / Series / Check-In
+        - League Finals
+        - Launcher / Configuration
+        - Setup / Documentation
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives or workarounds (optional)
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: Contributions
+      options:
+        - label: I may be interested in contributing a pull request for this feature.

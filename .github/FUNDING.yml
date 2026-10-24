@@ -1,1 +1,4 @@
-custom: ["https://paypal.me/kayleecamp42"]
+# To enable GitHub's Sponsor button with PayPal.Me, remove the leading #
+# and replace YOUR_PAYPAL_USERNAME with your actual PayPal.Me handle.
+# Do not publish the placeholder as a live donation link.
+# custom: ["https://paypal.me/kayleecamp42"]

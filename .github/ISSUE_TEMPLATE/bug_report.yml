@@ -1,0 +1,79 @@
+name: Bug report
+description: Report a reproducible problem with a tournament display or setup
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for testing Custom Matchplay Big Screen! Please do not include your Match Play API token, `.env` file, or other credentials. Match Play remains the authoritative source for tournament results.
+  - type: dropdown
+    id: display
+    attributes:
+      label: Display mode
+      options:
+        - Single Tournament / Wallboard
+        - League / Series / Check-In
+        - League Finals (one division)
+        - League Finals (two divisions)
+        - Launcher / Event discovery
+        - Installation / Configuration
+        - Other
+    validations:
+      required: true
+  - type: dropdown
+    id: format
+    attributes:
+      label: Match Play tournament format
+      options:
+        - Group Match Play
+        - Group Knockout
+        - Group Bracket (Finals)
+        - Not applicable / Unsure
+    validations:
+      required: true
+  - type: input
+    id: event-id
+    attributes:
+      label: Match Play tournament or series ID (optional)
+      description: Share only if you're comfortable making this event identifiable.
+      placeholder: "e.g. 123456"
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What should have happened?
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: What happened instead? Include any error text (without secrets).
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Select ...
+        2. Open ...
+        3. Observe ...
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Application version or commit (if known)
+      placeholder: "e.g. v0.9.0-beta"
+  - type: input
+    id: environment
+    attributes:
+      label: Operating system, browser, and display resolution (if relevant)
+      placeholder: "e.g. Windows 11 / Firefox / 1920×1080"
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Screenshots or additional context
+      description: Drag images here if useful. Redact personal data and credentials.

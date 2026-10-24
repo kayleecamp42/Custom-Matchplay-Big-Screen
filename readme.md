@@ -237,6 +237,17 @@ npm run build   # Build frontend assets to dist/ (not served by npm start)
 
 Live screens refresh while events are active, and some stop polling after completion is confirmed to reduce Match Play API traffic. More than one open browser tab increases API usage. Avoid unnecessary refreshes and respect Match Play availability.
 
+### Feedback and Bug Reports
+
+**Trying Custom Matchplay Big Screen? I'd love to hear how it works for you!**
+
+Please use [GitHub Issues](https://github.com/kayleecamp42/Custom-Matchplay-Big-Screen/issues) to report bugs, suggest improvements, or share the results of your testing.
+
+When reporting a bug, please include your tournament format, Match Play tournament ID (if shareable), a description of the problem, and screenshots when possible. Never share your API token.
+
+I'm especially interested in significant issues affecting tournament displays during this initial beta period. Fixes will be considered as time permits, and community contributions are always welcome.
+
+This is a volunteer open-source project, so individual technical support and ongoing maintenance aren't guaranteed.
 
 ### Support the Project
 
