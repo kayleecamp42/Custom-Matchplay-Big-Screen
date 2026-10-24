@@ -8,7 +8,39 @@
 .finals-outcome.eliminated{color:#fca5a5}
 
 /* Finals tiebreaker spotlight: visual urgency without rapid flashing. */
-.finals-group.finals-group-tb-active{border-color:#f472b6;box-shadow:0 0 0 1px #ec489955,0 0 18px #ec489922}
+/* Keep the spotlight on the card itself, not on the table's calculated height. */
+.finals-group.finals-group-tb-active {
+  position:relative;
+  border-color:#f472b6;
+  box-shadow:inset 0 0 0 1px #ec489988,0 0 14px #ec489922;
+  /* Keep the same flex height as the other groups; extra minimum height
+     pushed the fourth group below the viewport. */
+  min-height:0;
+  flex:1 1 0;
+}
+.finals-group.finals-group-tb-active .finals-grid {
+  min-height:0;
+  grid-template-rows:minmax(0,auto) repeat(4,minmax(0,1fr));
+}
+/* A live tie adds a fifth score column. Make its header and player rows
+   slightly denser rather than asking the whole group to grow taller. */
+.finals-columns:not(.finals-columns-single) .finals-group-tb-active {
+  gap:clamp(2px,.2vw,4px);
+  padding:clamp(3px,.35vw,6px);
+}
+.finals-columns:not(.finals-columns-single) .finals-group-tb-active .finals-grid {
+  gap:2px;
+}
+.finals-columns:not(.finals-columns-single) .finals-group-tb-active .finals-colhead {
+  padding-block:1px;
+  line-height:1.05;
+}
+.finals-columns:not(.finals-columns-single) .finals-group-tb-active .finals-player,
+.finals-columns:not(.finals-columns-single) .finals-group-tb-active .finals-score,
+.finals-columns:not(.finals-columns-single) .finals-group-tb-active .finals-total {
+  padding-block:1px;
+  line-height:1.05;
+}
 .finals-tb-colhead-live{color:#fce7f3;background:linear-gradient(180deg,#831843aa,#3b123c66);border:1px solid #f472b6;border-radius:5px;padding:3px;box-shadow:0 0 12px #ec489944;animation:finals-tb-breathe 3s ease-in-out infinite}
 .finals-tb-heading{display:block;font-weight:950;letter-spacing:.06em;font-size:clamp(8px,.67vw,14px);margin-bottom:3px}
 .finals-tb-heading.is-live{color:#f9a8d4}
@@ -208,4 +240,157 @@
   .finals-page:has(.finals-columns-single) { overflow:auto; height:auto; min-height:100vh; }
   .finals-columns-single { overflow:visible; }
   .finals-columns-single > .finals-division-4 > .finals-group { min-height:135px; }
+}
+
+
+
+/* Two-division projector fit: size the CARDS, not the entire page.
+   No transforms or canvas scaling: text remains legible and the grid cannot
+   inflate into huge cells when the browser gets shorter. */
+@media (min-width: 901px) {
+  .finals-page:has(.finals-columns:not(.finals-columns-single)) {
+    height: 100dvh;
+    min-height: 0;
+    display: grid;
+    grid-template-rows: max-content minmax(0, 1fr) 42px;
+    gap: clamp(4px, .55vh, 8px);
+    padding: clamp(4px, .6vh, 9px);
+    overflow: hidden;
+  }
+  .finals-page:has(.finals-columns:not(.finals-columns-single)) .finals-header {
+    min-height: 0;
+    height: auto;
+    grid-template-columns: 1fr 1.25fr 1fr;
+    padding: clamp(4px, .55vh, 8px) .8vw;
+  }
+  .finals-page:has(.finals-columns:not(.finals-columns-single)) .finals-heading h1 {
+    font-size: clamp(18px, min(2vw, 2.8vh), 32px);
+    line-height: 1.06;
+    margin: .12em 0;
+  }
+  .finals-page:has(.finals-columns:not(.finals-columns-single)) .finals-heading p {
+    font-size: clamp(11px, 1.45vh, 16px);
+  }
+  .finals-page:has(.finals-columns:not(.finals-columns-single)) .finals-kicker {
+    font-size: clamp(10px, 1.2vh, 14px);
+  }
+  .finals-page:has(.finals-columns:not(.finals-columns-single)) .finals-belt {
+    max-height: clamp(55px, 10vh, 115px);
+  }
+  .finals-page:has(.finals-columns:not(.finals-columns-single)) .finals-qrs {
+    grid-column: auto;
+    justify-content: flex-end;
+  }
+  .finals-page:has(.finals-columns:not(.finals-columns-single)) .finals-qrs img {
+    max-width: clamp(45px, 7.2vh, 75px);
+    max-height: clamp(45px, 7.2vh, 75px);
+  }
+  .finals-page:has(.finals-columns:not(.finals-columns-single)) .finals-qrs .qr-card {
+    padding: clamp(2px, .35vh, 5px);
+  }
+  .finals-columns:not(.finals-columns-single) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: minmax(0, 1fr);
+    gap: clamp(6px, .65vw, 12px);
+    min-height: 0;
+  }
+  .finals-columns:not(.finals-columns-single) > .finals-division:not(.finals-division-results) {
+    display: grid;
+    min-height: 0;
+    gap: clamp(3px, .4vh, 7px);
+  }
+  .finals-columns:not(.finals-columns-single) > .finals-division-4:not(.finals-division-results) {
+    grid-template-rows: max-content repeat(4, minmax(0, 1fr));
+  }
+  .finals-columns:not(.finals-columns-single) > .finals-division-2:not(.finals-division-results) {
+    grid-template-rows: max-content repeat(2, minmax(0, 1fr));
+  }
+  .finals-columns:not(.finals-columns-single) > .finals-division-1:not(.finals-division-results) {
+    grid-template-rows: max-content minmax(0, 1fr);
+  }
+  .finals-columns:not(.finals-columns-single) .finals-division-title {
+    padding: clamp(3px, .4vh, 6px) .7vw;
+    font-size: clamp(15px, 1.8vh, 24px);
+    line-height: 1.05;
+    min-height: 0;
+  }
+  .finals-columns:not(.finals-columns-single) > .finals-division:not(.finals-division-results) > .finals-group {
+    min-height: 0;
+    min-width: 0;
+    height: 100%;
+    overflow: hidden;
+    padding: clamp(3px, .42vh, 6px);
+    gap: clamp(2px, .27vh, 4px);
+    box-sizing: border-box;
+  }
+  .finals-columns:not(.finals-columns-single) .finals-group-heading {
+    flex: 0 0 auto;
+    font-size: clamp(12px, 1.55vh, 18px);
+    line-height: 1.08;
+    min-height: 0;
+  }
+  .finals-columns:not(.finals-columns-single) .finals-progress {
+    flex: 0 0 auto;
+    height: clamp(2px, .34vh, 4px);
+  }
+  .finals-columns:not(.finals-columns-single) > .finals-division:not(.finals-division-results) .finals-grid {
+    flex: 1 1 0;
+    min-height: 0;
+    height: 100%;
+    grid-template-rows: minmax(0, 1.3fr) repeat(4, minmax(0, 1fr));
+    gap: clamp(1px, .24vh, 3px);
+  }
+  .finals-columns:not(.finals-columns-single) .finals-colhead {
+    font-size: clamp(10px, 1.2vh, 14px);
+    line-height: 1.08;
+    padding: 0 1px;
+    overflow: hidden;
+  }
+  .finals-columns:not(.finals-columns-single) .finals-player,
+  .finals-columns:not(.finals-columns-single) .finals-score,
+  .finals-columns:not(.finals-columns-single) .finals-total {
+    font-size: clamp(11px, 1.4vh, 16px);
+    line-height: 1.08;
+    padding: 1px clamp(2px, .3vw, 5px);
+    min-height: 0;
+  }
+  .finals-columns:not(.finals-columns-single) .finals-player {
+    align-content: center;
+    gap: 0 3px;
+  }
+  .finals-columns:not(.finals-columns-single) .finals-player-name {
+    flex: 1 1 100%;
+  }
+  .finals-columns:not(.finals-columns-single) .finals-outcome {
+    font-size: clamp(8px, 1vh, 11px);
+    line-height: 1.05;
+  }
+  .finals-columns:not(.finals-columns-single) .finals-tb-colhead-live {
+    padding: 1px;
+  }
+  .finals-columns:not(.finals-columns-single) .finals-tb-heading {
+    font-size: clamp(8px, .95vh, 11px);
+    line-height: 1;
+    margin: 0 0 1px;
+  }
+  .finals-page:has(.finals-columns:not(.finals-columns-single)) .finals-footer {
+    min-height: 42px;
+    align-self: stretch;
+    display: flex;
+    align-items: end;
+    justify-content: center;
+    padding-bottom: 2px;
+    font-size: clamp(10px, 1.1vh, 13px);
+    line-height: 1.1;
+  }
+}
+
+/* Below normal projector sizes, prefer an honest scroll to unreadably tiny
+   text; never silently zoom the entire screen down to 45% size. */
+@media (max-width: 900px) {
+  .finals-page:has(.finals-columns:not(.finals-columns-single)) {
+    height: auto;
+    min-height: 100dvh;
+    overflow: visible;
+  }
 }

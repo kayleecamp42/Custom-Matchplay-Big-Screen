@@ -264,6 +264,7 @@ export default function Finals() {
   const [errors,setErrors]=useState({});
   const [lastUpdated,setLastUpdated]=useState(null);
   const [tdNames,setTdNames]=useState(readTdNames);
+
   useEffect(() => {
     const update = () => setTdNames(readTdNames());
     window.addEventListener("td-list-changed", update);
