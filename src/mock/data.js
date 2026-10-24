@@ -88,7 +88,7 @@ export const MOCK_TOURNAMENT_STANDINGS = [
 
 export const MOCK_SERIES = {
   seriesId: 5803,
-  name: "Super Abari Pinball League",
+  name: "Your Super Awesome League",
   players: MOCK_PLAYERS,
   standings: [
     { playerId: 7,  pointsAdjusted: 52 },

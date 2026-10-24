@@ -13,7 +13,7 @@ export const settings = {
   logoUrl: "/venue-logo.svg", // replace public/venue-logo.svg or point to another file in public/
   communityUrl: "", // blank points QR to the public GitHub README setup instructions
   communityLabel: "Community",
-  playlistId: "", // empty string hides video
+  playlistId: "PLws6SPocL-bOeA2zePM1W7NpxH-V6zyiW", // default playlist; empty string hides video
   directors: [], // optional TD names, e.g. ["Jane Doe", "Sam Smith"]
   finals: {
     headerImageUrl: "/championship-trophy.svg", // empty string hides header art

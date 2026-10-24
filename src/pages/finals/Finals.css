@@ -95,37 +95,117 @@
    CSS subgrid aligns the FINAL STANDINGS sections to the lower of the two
    completed round summaries without stretching either summary independently.
    If one division is still playing, its existing adaptive layout is unchanged. */
-.finals-columns:has(> .finals-division-results:first-child):has(> .finals-division-results:last-child) {
+.finals-columns:not(.finals-columns-single):has(> .finals-division-results:first-child):has(> .finals-division-results:last-child) {
   grid-template-rows: auto auto minmax(0, 1fr);
   align-items:stretch;
 }
-.finals-columns:has(> .finals-division-results:first-child):has(> .finals-division-results:last-child) > .finals-division-results {
+.finals-columns:not(.finals-columns-single):has(> .finals-division-results:first-child):has(> .finals-division-results:last-child) > .finals-division-results {
   display:grid;
   grid-row:1 / span 3;
   grid-template-rows:subgrid;
   min-height:0;
 }
-.finals-columns:has(> .finals-division-results:first-child):has(> .finals-division-results:last-child) > .finals-division-results > .finals-results {
+.finals-columns:not(.finals-columns-single):has(> .finals-division-results:first-child):has(> .finals-division-results:last-child) > .finals-division-results > .finals-results {
   display:contents;
 }
-.finals-columns:has(> .finals-division-results:first-child):has(> .finals-division-results:last-child) > .finals-division-results .finals-group-compact {
+.finals-columns:not(.finals-columns-single):has(> .finals-division-results:first-child):has(> .finals-division-results:last-child) > .finals-division-results .finals-group-compact {
   grid-row:2;
 }
-.finals-columns:has(> .finals-division-results:first-child):has(> .finals-division-results:last-child) > .finals-division-results .finals-results-list {
+.finals-columns:not(.finals-columns-single):has(> .finals-division-results:first-child):has(> .finals-division-results:last-child) > .finals-division-results .finals-results-list {
   grid-row:3;
 }
 @media (max-width:1100px) {
-  .finals-columns:has(> .finals-division-results:first-child):has(> .finals-division-results:last-child) {
+  .finals-columns:not(.finals-columns-single):has(> .finals-division-results:first-child):has(> .finals-division-results:last-child) {
     grid-template-rows:none;
   }
-  .finals-columns:has(> .finals-division-results:first-child):has(> .finals-division-results:last-child) > .finals-division-results {
+  .finals-columns:not(.finals-columns-single):has(> .finals-division-results:first-child):has(> .finals-division-results:last-child) > .finals-division-results {
     display:flex;
     grid-row:auto;
   }
-  .finals-columns:has(> .finals-division-results:first-child):has(> .finals-division-results:last-child) > .finals-division-results > .finals-results {
+  .finals-columns:not(.finals-columns-single):has(> .finals-division-results:first-child):has(> .finals-division-results:last-child) > .finals-division-results > .finals-results {
     display:flex;
   }
 }
 
 /* Same configurable tournament-director tag used by the regular wallboard. */
 .finals-td-badge { display:inline-block; margin-right:.4em; padding:.08em .35em; border-radius:999px; background:rgba(250,204,21,.18); border:1px solid rgba(250,204,21,.55); color:#facc15; font-size:.72em; font-weight:950; letter-spacing:.06em; vertical-align:middle; white-space:nowrap; }
+
+/* Single-division finals use the full projector width; two divisions remain unchanged. */
+.finals-columns.finals-columns-single { grid-template-columns:minmax(0,1fr); }
+.finals-columns-single .finals-division-title {font-size:clamp(18px,1.8vw,32px)}
+.finals-columns-single .finals-group-heading {font-size:clamp(15px,1.25vw,27px)}
+.finals-columns-single .finals-player,.finals-columns-single .finals-score,.finals-columns-single .finals-total {font-size:clamp(15px,1.25vw,28px)}
+.finals-columns-single .finals-colhead {font-size:clamp(13px,1vw,22px)}
+.finals-columns-single .finals-placement {font-size:clamp(20px,1.9vw,40px)}
+.finals-columns-single .finals-other-placements>div {font-size:clamp(14px,1.15vw,24px)}
+
+
+/* Single-division finals: KEEP the current round's groups in one vertical column.
+   Fit all four quarterfinal groups within the available projector height.
+   A short viewport may still scroll rather than hide player names or scores. */
+.finals-columns-single > .finals-division-4,
+.finals-columns-single > .finals-division-2 {
+  display:flex;
+  flex-direction:column;
+  min-height:0;
+}
+.finals-columns-single > .finals-division-4 > .finals-group,
+.finals-columns-single > .finals-division-2 > .finals-group {
+  flex:1 1 0;
+  min-height:0;
+}
+
+@media (min-width: 901px) {
+  .finals-page:has(.finals-columns-single) {
+    height:100vh;
+    min-height:0;
+    overflow:hidden;
+  }
+  .finals-columns-single { min-height:0; overflow:hidden; }
+  .finals-columns-single > .finals-division-4 { gap:clamp(3px,.4vh,7px); }
+  .finals-columns-single > .finals-division-4 > .finals-division-title {
+    padding:clamp(3px,.45vh,7px) .7vw;
+    font-size:clamp(15px,1.75vh,24px);
+    flex:0 0 auto;
+  }
+  .finals-columns-single > .finals-division-4 > .finals-group {
+    padding:clamp(3px,.45vh,7px);
+    gap:clamp(2px,.25vh,4px);
+  }
+  .finals-columns-single > .finals-division-4 .finals-group-heading {
+    font-size:clamp(12px,1.55vh,19px);
+    line-height:1.1;
+    flex:0 0 auto;
+  }
+  .finals-columns-single > .finals-division-4 .finals-progress {
+    height:clamp(2px,.35vh,4px);
+    flex:0 0 auto;
+  }
+  .finals-columns-single > .finals-division-4 .finals-grid {
+    gap:clamp(1px,.25vh,3px);
+    min-height:0;
+    grid-template-rows:auto repeat(4,minmax(0,1fr));
+  }
+  .finals-columns-single > .finals-division-4 .finals-player,
+  .finals-columns-single > .finals-division-4 .finals-score,
+  .finals-columns-single > .finals-division-4 .finals-total {
+    font-size:clamp(11px,1.65vh,19px);
+    padding:clamp(1px,.25vh,4px) .32vw;
+    line-height:1.1;
+  }
+  .finals-columns-single > .finals-division-4 .finals-colhead {
+    font-size:clamp(10px,1.35vh,16px);
+    line-height:1.05;
+    padding-block:1px;
+  }
+  .finals-columns-single > .finals-division-4 .finals-colhead small { margin-top:1px; }
+  .finals-columns-single > .finals-division-4 .finals-outcome {
+    font-size:clamp(8px,1.05vh,12px);
+  }
+}
+/* Laptop-height fallback: prioritize a readable scroll over clipped rows. */
+@media (max-height: 680px) {
+  .finals-page:has(.finals-columns-single) { overflow:auto; height:auto; min-height:100vh; }
+  .finals-columns-single { overflow:visible; }
+  .finals-columns-single > .finals-division-4 > .finals-group { min-height:135px; }
+}

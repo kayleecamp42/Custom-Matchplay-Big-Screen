@@ -200,7 +200,7 @@ function FinalResults({ label, data, games, tiebreakers, round, tdNames }) {
   </div>;
 }
 
-function Division({ label, data, error, tdNames }) {
+function Division({ label, data, error, tdNames, single = false }) {
   // The games endpoint selects the active/latest round. Match its roundId first,
   // rather than picking the first round still marked "started" by the API.
   const gameRoundId = data?.games?.[0]?.roundId;
@@ -235,7 +235,7 @@ function Division({ label, data, error, tdNames }) {
   const resultsReady = finalStandingsReady(data, round, sets, tiebreakers);
   const groupCount = sets.length;
   return <div className={`finals-division finals-division-${groupCount} ${resultsReady ? "finals-division-results" : ""}`}>
-    <div className="finals-division-title"><strong>{label} Division</strong><span>{round?.name || (data ? "Awaiting round" : "Loading…")}</span></div>
+    <div className="finals-division-title"><strong>{single ? "Finals" : `${label} Division`}</strong><span>{round?.name || (data ? "Awaiting round" : "Loading…")}</span></div>
     {error && <p className="finals-error">{error}</p>}
     {data && resultsReady ? <FinalResults label={label} data={data} games={sets[0]} tiebreakers={groupTiebreakers[0]} round={round} tdNames={tdNames} /> : data && sets.map((games,i)=><Group key={`${round?.roundId}-${setNumbers[i]}`} games={games} tiebreakers={groupTiebreakers[i]} number={i+1} tournament={data.tournament} isFinalRound={isFinalRound} tdNames={tdNames} />)}
   </div>;
@@ -259,6 +259,7 @@ export default function Finals() {
   const a = sessionStorage.getItem("tournament") || "";
   const b = sessionStorage.getItem("finalsB") || "";
   const title = sessionStorage.getItem("finalsTitle") || settings.finalsTitle;
+  const single = sessionStorage.getItem("finalsDivisionCount") === "1" || !b;
   const [data,setData]=useState({});
   const [errors,setErrors]=useState({});
   const [lastUpdated,setLastUpdated]=useState(null);
@@ -308,11 +309,11 @@ export default function Finals() {
   },[a,b]);
   return <main className="finals-page">
     <header className="finals-header">
-      <div className="finals-heading"><div className="finals-kicker">{settings.venueName}</div><h1>{title}</h1><p>Live A &amp; B Division Finals</p></div>
+      <div className="finals-heading"><div className="finals-kicker">{settings.venueName}</div><h1>{title}</h1><p>{single ? "Live Championship Finals" : "Live A & B Division Finals"}</p></div>
       {settings.finals.headerImageUrl && <img className="finals-belt" src={settings.finals.headerImageUrl} alt="Championship artwork" />}
-      <div className="finals-qrs"><QrCard label="A Division" src={qr(`https://app.matchplay.events/tournaments/${a}`)} alt="A Division QR"/><QrCard label="B Division" src={qr(`https://app.matchplay.events/tournaments/${b}`)} alt="B Division QR"/><QrCard label={settings.communityLabel} src={qr(discord)} alt="Community QR"/></div>
+      <div className="finals-qrs"><QrCard label={single ? "Tournament" : "A Division"} src={qr(`https://app.matchplay.events/tournaments/${a}`)} alt="Tournament QR"/>{!single && <QrCard label="B Division" src={qr(`https://app.matchplay.events/tournaments/${b}`)} alt="B Division QR"/>}<QrCard label={settings.communityLabel} src={qr(discord)} alt="Community QR"/></div>
     </header>
-    <div className="finals-columns"><Division label="A" data={data.A} error={errors.A} tdNames={tdNames}/><Division label="B" data={data.B} error={errors.B} tdNames={tdNames}/></div>
+    <div className={`finals-columns ${single ? "finals-columns-single" : ""}`}><Division label="A" single={single} data={data.A} error={errors.A} tdNames={tdNames}/>{!single && <Division label="B" data={data.B} error={errors.B} tdNames={tdNames}/>}</div>
     <footer className="finals-footer">{lastUpdated ? `Updated ${lastUpdated.toLocaleTimeString()} · ${(!a || frozen.current.A) && (!b || frozen.current.B) ? "Final results locked · Refresh page to reload" : "Live divisions refresh every 15 seconds"}` : "Connecting to Match Play…"}</footer>
   </main>;
 }

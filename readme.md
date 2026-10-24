@@ -1,204 +1,270 @@
 # Custom Matchplay Big Screen
 
-A customizable browser-based big-screen display for tournaments and leagues using the [Match Play Events](https://matchplay.events/) API. This is an independent community project, not an official Match Play application.
+**Public beta · Community project · Contributions welcome**
 
-## Requirements
+Custom Matchplay Big Screen is a browser-based display for competitive pinball tournaments and leagues using the [Match Play Events](https://matchplay.events/) API. Run it on the computer connected to your projector or TV to show live games, standings, check-in, or league finals.
 
-- **Node.js 22.12 or newer** (recommended: current Node.js LTS), which includes `npm`. Vite 8 requires Node.js 20.19+ or 22.12+; using current LTS is simplest. Check with `node --version` and `npm --version`.
-- **Git** (optional if downloading a ZIP instead of cloning).
-- An internet connection for live Match Play data.
-- A **Match Play API token** with access to the events you want to display.
-- A modern browser such as Chrome, Edge, or Firefox.
+This is an independent community project, **not an official Match Play application**. Match Play remains the authoritative source for tournament results.
 
-## Install (Windows PowerShell)
+> **Maintenance:** This project began as a display for my own events. I'm sharing it for other tournament directors to use, adapt, and improve. I expect to review significant bug reports during the initial public beta (roughly the first one to two months, through December 2026), as time permits. I can't promise ongoing maintenance, individual setup support, new formats, or long-term compatibility. Well-scoped bug reports and community pull requests are welcome. Please test with your own events before relying on it at a tournament.
 
-1. Install Node.js from https://nodejs.org/ and (if using Git) Git from https://git-scm.com/. Close and reopen PowerShell afterward.
-2. Clone the repository and open the folder:
+## Supported tournament formats
+
+**Please check your tournament format before installing.**
+
+| Display mode | Supported Match Play format | What it shows |
+| --- | --- | --- |
+| **Single Tournament** | **Group Match Play** or **Group Knockout** | Current games, standings, and tournament information |
+| **League / Series** | Match Play **series**, with a selected **Group Match Play** or **Group Knockout** tournament | Check-in, registrations, series standings, and tournament display |
+| **League Finals** | **Group Bracket** (group-elimination finals) | One or two divisions, advancement, tiebreakers, championship placements, and final standings |
+
+Other Match Play formats, including Best Game, Pingolf, and formats other than those listed above, are **not currently supported**. The launcher identifies incompatible events and explains why they cannot be selected. Manual ID entry is available, but does not remove format restrictions.
+
+## Before you begin: what you need
+
+You **do not need programming experience** to try the beta. Setup is easiest on a Windows laptop with a browser and an internet connection. The application runs locally on the computer connected to your projector or TV.
+
+| Prerequisite | Required? | What it does |
+| --- | --- | --- |
+| **Node.js (22.12 or newer)** | Yes | Runs the application. Installing Node.js also installs **npm**, the tool that downloads project dependencies. Choose a currently supported **LTS** version. |
+| **Match Play API token** | Yes | Lets the app fetch your authorized tournament and series data. Keep the token private. |
+| **Chrome, Firefox, or Edge** | Yes | Opens the display in a browser. |
+| **Internet connection** | Yes, for live use | Loads Match Play data, plus externally hosted QR images and optional YouTube content. |
+| **Git** | No | Makes downloading and updating the project easier. You can use a GitHub ZIP download instead. |
+| **Visual Studio Code** | No | Optional text editor for adjusting venue settings; Notepad works for basic setup. |
+
+### Step-by-step setup for Windows (first-time users)
+
+**1. Install Node.js and npm**
+
+1. Go to **[nodejs.org](https://nodejs.org/)** and download the **LTS** installer for Windows. Use the official Node.js website rather than a third-party download site.
+2. Run the installer. You can accept the normal installation defaults; ensure npm is included (it normally is).
+3. Close any PowerShell windows that were already open, then open a **new PowerShell** window (Start menu → type **PowerShell** → Open).
+4. Verify both commands work:
 
    ```powershell
+   node --version
+   npm --version
+   ```
+
+   Both should print version numbers. Node must be **22.12 or newer**. If either command is not recognized, reopen PowerShell; if that doesn't help, reinstall Node.js and confirm it was added to your PATH.
+
+**2. Download Custom Matchplay Big Screen**
+
+**Option A — No Git required (simplest for testers):**
+
+1. Open the [Custom Matchplay Big Screen GitHub repository](https://github.com/kayleecamp42/custom-matchplay-big-screen).
+2. Select **Code → Download ZIP**.
+3. In File Explorer, right-click the downloaded ZIP and choose **Extract All**. Choose an easy-to-find destination such as your **Documents** folder.
+4. Open the extracted folder that contains `package.json`, `server.js`, and `.env.example`. This is the **project folder**. Depending on the downloaded archive name, it may have a suffix such as `-main`.
+
+**Option B — Git (easier to update later):**
+
+1. Install Git for Windows from **[git-scm.com](https://git-scm.com/downloads/win)**. Reopen PowerShell after installing it.
+2. In PowerShell, choose a location for the project (for example, your Documents folder) and clone it:
+
+   ```powershell
+   cd "$HOME\Documents"
    git clone https://github.com/kayleecamp42/custom-matchplay-big-screen.git
    cd custom-matchplay-big-screen
    ```
 
-   Or download the repository ZIP, extract it, and open PowerShell in the extracted folder.
-3. **Required:** Install dependencies before your first launch (and again after dependency changes):
+   If your Documents folder is redirected to OneDrive or another location, adjust the `cd` command or use the File Explorer method below.
 
-   ```powershell
-   npm install
-   ```
+**3. Open PowerShell inside the project folder**
 
-4. Create your private environment file from the template:
+For either download method, the easiest option is to open the project folder in **File Explorer**, click the address bar, type `powershell`, and press **Enter**. A PowerShell window opens in that folder.
 
-   ```powershell
-   Copy-Item .env.example .env
-   notepad .env
-   ```
+Confirm you are in the correct folder:
 
-   Replace the placeholder in `.env` with your Match Play API token:
+```powershell
+Get-ChildItem package.json, server.js, .env.example
+```
 
-   ```dotenv
-   MATCHPLAY_TOKEN=your_actual_token_here
-   PORT=8787
-   ```
+You should see all three filenames. If PowerShell reports that they do not exist, you're in the wrong folder; navigate to the directory containing them.
 
-   Never commit or share `.env`. The included `.gitignore` excludes it.
+**4. Install the application dependencies**
 
-## Customize your venue (single configuration file)
+Run this **once for each new download or clone**, and again when a later update changes dependencies:
 
-Edit **`src/config.js`** before starting. This is the central place for venue-specific display settings:
+```powershell
+npm install
+```
 
-| Setting | What it controls |
+This downloads packages into `node_modules/`. It can take a little while and requires internet access. **Do not skip this step**: otherwise the app may fail with a missing `vite` module error. `node_modules/` is intentionally not included in GitHub source downloads.
+
+**5. Create your private `.env` file and add your Match Play token**
+
+Run:
+
+```powershell
+Copy-Item .env.example .env
+notepad .env
+```
+
+In the file that opens, locate the `MATCHPLAY_TOKEN` setting and replace its placeholder with your **own Match Play API token**. Keep other settings from the example unless you have a reason to change them. The essential values look like:
+
+```dotenv
+MATCHPLAY_TOKEN=your_actual_token_goes_here
+PORT=8787
+```
+
+Get your API token through Match Play's account/API settings or its official developer documentation. The exact website menus may change; **do not enter your Match Play account password instead of a token**. If you cannot locate a token, consult Match Play's current instructions. Save the file and close Notepad.
+
+**Security:** Never share `.env`, paste its contents into a public GitHub issue, or include it in a ZIP you distribute. `.env.example` is only a template and should not contain your real token.
+
+**6. Start both parts of the app with one command**
+
+From the same project folder, run:
+
+```powershell
+npm start
+```
+
+Keep the PowerShell window open. The terminal should print the local display URL, typically **http://localhost:5173/**. Open that address in Chrome, Firefox, or Edge. If it prints a different port, use the exact address shown.
+
+You should now see the launcher. Choose a supported tournament or series from automatic discovery, or enter an event ID manually. See [Select an event](#select-an-event).
+
+**7. Use the display and shut it down**
+
+Connect your laptop to your TV/projector, then press **F11** in the browser if you'd like full-screen mode. To stop the application, return to PowerShell and press **Ctrl+C**. The next time you use it, open PowerShell in the project folder and run **`npm start`**; you do **not** need to rerun `npm install` every time.
+
+### macOS and Linux (short setup)
+
+Install a currently supported Node.js LTS version (**22.12+**, including npm), then download or clone the repository. Open Terminal in the project folder and run:
+
+```bash
+npm install
+cp .env.example .env
+```
+
+Edit `.env` with your Match Play API token using your preferred editor, then launch with `npm start`. Open the local URL printed in Terminal. Use **Ctrl+C** to stop. Git is optional if you download and extract the GitHub source ZIP.
+
+### Optional HTML shortcut
+
+`open-display.html` in the project root can be opened from a desktop shortcut. If the display is running on the default `localhost:5173` address, the file opens it in your browser. Otherwise it shows instructions to start the app. **The shortcut does not start Node.js or run `npm start` for you.** If Vite chooses another port, use the URL shown in the terminal.
+
+## Select an event
+
+The launcher offers three modes: **Single Tournament**, **League / Series**, and **League Finals**. It attempts to discover events owned by the configured Match Play organizer, and it also supports entering tournament or series IDs manually.
+
+- **Automatic discovery** includes planned and active events with known start times within the next **30 days**. It searches a limited recent history, so older or unlinked series may not appear. Events with unknown start dates may still appear.
+- Unsupported events are shown with a short reason; supported events identify their format.
+- **Manual IDs** can access events outside the discovery date window, subject to supported format checks.
+- **League Finals** supports one Group Bracket tournament in **Single Division** mode, or separate A/B tournament IDs in **Two Divisions** mode. Only the current round is shown. Finals stop refreshing after final results are confirmed.
+
+### If automatic discovery cannot identify your organizer
+
+Your normal `MATCHPLAY_TOKEN` is still required. You do **not** need a Match Play password or a second token. If the authenticated profile lookup is restricted, add **one** of the following optional values to `.env`:
+
+```dotenv
+# Your numeric Match Play organizer/user ID:
+MATCHPLAY_USER_ID=12345
+
+# Alternatively, use the ID of a tournament you organized:
+# MATCHPLAY_DISCOVERY_TOURNAMENT_ID=123456
+```
+
+These are examples, not usable IDs. Remove the `#` on a line to enable it. Stop and restart `npm start` after editing `.env`. If discovery still fails, use manual IDs and see Troubleshooting below.
+
+## Customize your display
+
+Change venue-specific defaults in **`src/config.js`**, then restart `npm start` and refresh the browser. **Do not put your API token here**: frontend source is visible to browser users.
+
+| Setting | Purpose |
 | --- | --- |
-| `venueName` | Venue name shown at the top of Finals |
-| `appTitle`, `leagueTitle`, `finalsTitle` | Launcher, league/check-in, and finals titles |
-| `logoUrl` | Logo image used by wallboard and check-in |
-| `communityUrl`, `communityLabel` | Community QR code across all views; blank URL links to public GitHub setup instructions |
-| `playlistId` | YouTube playlist shown on check-in (empty string hides video) |
-| `directors` | Initial TD player-name badges (case insensitive, exact names) |
-| `finals.*` | Championship artwork, A/B winner labels, and B winner icon |
+| `venueName` | Venue name in Finals |
+| `appTitle`, `leagueTitle`, `finalsTitle` | Headings across the screens |
+| `logoUrl` | Venue logo for wallboard and check-in |
+| `communityUrl`, `communityLabel` | Community QR destination and label |
+| `playlistId` | Check-in YouTube playlist; set to `""` to hide it |
+| `directors` | Default names for tournament-director badges |
+| `finals.headerImageUrl`, `finals.championImageUrl` | Finals artwork |
+| `finals.winnerAText`, `finals.winnerBText`, `finals.winnerBIcon` | Winner labels and icon |
 
-**All local assets live in `public/`** at the project root. Do not put logos or championship images beside `src/` or in the project root. Every display mode reads its local image URLs from `src/config.js`:
+**Static assets belong in `public/`.** The default examples are `public/venue-logo.svg` and `public/championship-trophy.svg`. For a new image placed at `public/my-logo.png`, configure `logoUrl: "/my-logo.png"` (start with `/`, but don't include `public` in the URL). Replace the generic examples or supply your own. The included YouTube playlist is a sample default and can be changed.
 
-| Asset setting | Default file in `public/` | Used by |
-| --- | --- | --- |
-| `logoUrl` | `venue-logo.svg` | Tournament wallboard and league/check-in |
-| `finals.headerImageUrl` | `championship-trophy.svg` | Finals header |
-| `finals.championImageUrl` | `championship-trophy.svg` | A-division winner card |
-
-The included logo is a generic **VENUE NAME** placeholder; the trophy is generic championship artwork. Replace either file with your own or add another image to `public/` and update its URL in `src/config.js` (for example `logoUrl: "/my-club-logo.png"` for `public/my-club-logo.png`). The URL should **start with `/` and omit `public`** because Vite serves that directory from the site root. SVG, PNG, JPEG, and WebP files work. Restart or refresh the browser to see changes; if the browser has cached an image, hard-refresh with Ctrl+Shift+R.
-
-**Not image files:** tournament and community QR images are generated dynamically from their URLs; the B-division cash emoji is text configured by `winnerBIcon`. These are not missing static assets. An empty `communityUrl` keeps the QR card visible and points it to this repository’s GitHub README; an empty playlist field hides the video. No Super Abari logo or championship belt file is required for this generic build.
-
-If upgrading from an older Super Abari copy, obsolete `super-abari-logo.png` (project root) and `public/championship-belt.png` / `public/venue-logo.png` may remain on disk; the updated app no longer references them. You can delete those old assets after verifying your custom settings don't use them.
-
-**Default community QR:** When `communityUrl` is blank, the QR code links to the [Configure your community QR code](#configure-your-community-qr-code) section of this GitHub README. This works from phones on any network as long as this repository is **public** and GitHub is reachable. While the repository is private, scanning guests will encounter a sign-in or access error. Set a real Discord, Facebook, or other community link before running an event, or publish the repository before relying on its fallback QR. The local `public/community-setup.html` from earlier builds is no longer used as the fallback.
+The visible **gear icon** opens display settings; **Ctrl+K** remains available. Browser-saved TD names override the initial `directors` list in `src/config.js` for that browser. Other display preferences are also browser-local.
 
 ### Configure your community QR code
 
-This QR code is a placeholder. Your tournament director should replace it with a link to a community gathering place, such as a Discord server, Facebook group, tournament website, or public event page.
-
-1. Open `src/config.js` in your copy of **Custom Matchplay Big Screen**.
-2. Find `communityUrl` and `communityLabel`.
-3. Change these to your actual community URL and a short label, for example:
+When `communityUrl` is blank, the QR card remains visible and points to **this section of the public GitHub README**. It is a placeholder—not a link to a local club or server. For your event, edit `src/config.js`:
 
 ```js
 communityUrl: "https://discord.gg/your-invite",
 communityLabel: "Join Our Community",
 ```
 
-4. Save the file, restart `npm start`, and refresh the display. Scan the updated QR code with a phone to verify it opens the right community page.
+A public Facebook group, club website, or event page works too. **Scan the code with a phone before using it at a tournament**. The default GitHub destination requires the repository to be public and accessible to visitors. QR images are generated using an external service, so the display requires an internet connection for them.
 
-If you are seeing this page after scanning a big-screen display, ask the tournament director for a link to their local pinball community. This default QR code does not automatically join you to any group.
+## Displaying on a TV or projector
 
-**TD badges:** The existing Ctrl+K Developer Tools TD list still works. If you've previously saved a TD list in the browser, it overrides the `directors` defaults in `src/config.js` for that browser. To use the file's defaults instead, clear the locally stored list in Developer Tools (or clear that site's `td-player-names` localStorage key). Display preferences and tournament IDs are still managed by the existing browser UI and session storage.
+The supported setup is **a laptop or other computer connected directly to the display** (for example, over HDMI), with the application and browser running on that computer. Press **F11** on Windows for browser full-screen mode.
 
-**Security:** Put the API token **only in `.env`**, not in `src/config.js`, which is bundled into browser-visible JavaScript.
+Currently the server is intended for **localhost-only access**. Connecting a smart TV or second computer directly to the laptop's LAN IP address is **not yet supported**; do not expose the token-backed API proxy or development server to an untrusted network.
 
-**Not yet configurable:** Layout, refresh rates, scoring, and bracket/advancement logic remain unchanged to preserve established behavior. A future pass can expose those separately.
+## Updates and troubleshooting
 
-## Launch (every time)
+To update a cloned installation, save or back up changes to tracked files such as `src/config.js` before running `git pull`. Then run `npm install` if dependencies have changed, and restart `npm start`. `.env` is local and ignored by Git.
 
-From the project directory, run **one command**:
-
-```powershell
-npm start
-```
-
-This starts **both** the Express API proxy and the React/Vite display. Open the local address printed by Vite, normally **http://localhost:5173**. Use the launcher's event ID fields to choose your tournament or league. Keep the terminal open while the display is in use; press **Ctrl+C** to stop.
-
-### Optional desktop shortcut (Windows)
-
-You can make a desktop shortcut to **`open-display.html`** in the project root. After starting the app with `npm start`, double-clicking this HTML file opens the wallboard at `http://localhost:5173/`. If the local web server isn't running, it shows instructions to run `npm start` (or `npm install` first on a fresh checkout) and a **Try Again** button, rather than just showing a browser connection error.
-
-To create the shortcut: right-click `open-display.html` in File Explorer, choose **Show more options → Send to → Desktop (create shortcut)** on Windows 11 (menu wording varies). The shortcut only opens the browser; **it cannot start Node.js for you**. Leave your `npm start` terminal open.
-
-The shortcut assumes Vite runs on port **5173**. If that port is occupied, Vite may select a different port; use the URL printed in your terminal. Some browser security settings may block a local HTML file checking a local web server; in that case use the **Open display manually** link while the app is running.
-
-> **Important:** This is a local development-style runtime, not yet a packaged production server. The Vite frontend and API proxy still run as separate processes, but `npm start` manages both for you. Live data requires the Match Play API and an internet connection.
-
-## macOS / Linux
-
-Install a supported Node.js version and optionally Git. Follow the same clone and `npm install` steps, then create `.env` with `cp .env.example .env` and edit it. Run `npm start` and open the printed local URL.
-
-## Running on a TV
-
-Connect a computer to the TV or projector and open the display URL in a browser on that computer. Full-screen mode is usually **F11** on Windows. This starter command binds the frontend to localhost for safety; viewing it from another device on your network will require a deliberate networking configuration change.
-
-## What the application displays
-
-- **Tournament wallboard:** active games, standings, and tournament information.
-- **League / series check-in:** registrations and series standings.
-- **League finals:** A/B division scoreboards, advancement, tiebreakers, and championship results.
-- **Developer tools:** in the existing app, use **Ctrl+K** for mock mode and TD configuration.
-
-Default settings use a generic venue name, logo placeholder, and trophy. Customize everything in `src/config.js` and `public/`.
-
-## Troubleshooting
-
-| Symptom | What to check |
+| Problem | What to try |
 | --- | --- |
-| `node` or `npm` not recognized | Install Node.js and reopen the terminal. |
-| Missing `MATCHPLAY_TOKEN` | Check that `.env` exists next to `server.js` and contains the token. |
-| `Cannot find module` or missing Vite | Run `npm install` from the repository folder. |
-| Browser can't open the display | Check the URL printed by Vite and leave the terminal running. |
-| API requests fail | Check your token, internet access, and whether the API proxy started. |
-| Port 8787 already in use | Stop the old proxy process; the Vite proxy expects port 8787 by default. |
-| Port 5173 already in use | Vite may choose another port; use the URL printed in the terminal. |
+| `node` or `npm` is not recognized | Follow **Step 1** above; install Node.js LTS and open a new terminal. |
+| Missing Vite or `Cannot find module` | Run `npm install` in the project folder (Step 4); new downloads do not include `node_modules`. |
+| Browser cannot open the display | Confirm `npm start` is still running; use the exact URL shown by Vite. |
+| Port 5173 or 8787 is occupied | Close the earlier running app; Vite may choose a different frontend port. |
+| Missing API token | Check that `.env` is next to `server.js`, has a real `MATCHPLAY_TOKEN`, and is not commented out. |
+| Discovery fails, but manual IDs work | Check the token and optional organizer ID settings; restart both processes. The backend can report a more specific upstream error at `http://localhost:8787/api/launcher/discovery`. |
+| Community QR is blank | Check connectivity and content blockers; QR images require an external image service. |
+| Event is missing from discovery | It may be outside the 30-day future window, outside the limited history search, or an unlinked series. Use manual ID entry. |
 
-## Updating from GitHub
+**API routing for contributors:** Requests from the browser to `http://localhost:8787/api/...` are forwarded to `https://api.matchplay.events/api/...`. Both the `api.matchplay.events` host **and** the `/api` path prefix are required. Do not change this to `app.matchplay.events` or remove the `/api` prefix.
 
-From the project directory, after saving any local changes:
+## For testers and contributors
 
-```powershell
-git pull
-npm install
+Feedback is most useful when it includes the display mode and tournament format, what you expected, what happened, the approximate round/state, browser and OS, and a screenshot or safe reproduction steps. **Never post API tokens, `.env` files, or private participant information in a public issue.** Please search existing issues before filing a new one.
+
+Pull requests are welcome for bug fixes, documentation, compatibility, and additional format support. Prefer focused changes with clear test steps. The current implementation uses React/Vite for the browser display and an Express proxy for Match Play API requests.
+
+Contributor commands:
+
+```bash
+npm start       # Start frontend and backend together
+npm run dev     # Frontend only (requires the backend to be running separately)
+npm run server  # Backend only
+npm run build   # Build frontend assets to dist/ (not served by npm start)
 ```
 
-Then restart with `npm start`. Avoid storing personal settings directly in tracked source files; `.env` is intentionally ignored by Git.
-
-## For contributors
-
-- `npm start` starts the proxy and frontend together.
-- `npm run dev` starts **only Vite** (useful if the API proxy is already running).
-- `npm run server` starts **only the API proxy**.
-- `npm run build` creates a frontend build in `dist/`; the current `npm start` command does not serve that build.
-
-## Security
-
-Treat the Match Play API token as a secret. Keep `.env` private. The local server is intended for trusted machines and networks; do not expose the API proxy directly to the public internet without additional security controls.
-
-## Acknowledgment
-
-Match Play and its API are provided by their respective owners. This community project is not affiliated with or endorsed by Match Play.
-
-### Community QR card missing or blank?
-
-All display modes use `getCommunityUrl()` in `src/config.js`. With an empty `communityUrl`, the QR must remain visible and point to the public GitHub README instructions. If an older update left the community card empty, install the community QR render fix and restart `npm start`. The QR image is fetched from an external QR image service, so internet access is needed for it to display; check your connection or content blockers if the card remains blank.
+Live screens refresh while events are active, and some stop polling after completion is confirmed to reduce Match Play API traffic. More than one open browser tab increases API usage. Avoid unnecessary refreshes and respect Match Play availability.
 
 
-## Live updates and API request frequency
+### Support the Project
 
-The Tournament / League Wallboard freezes the last successful standings and games snapshot and stops scheduled polling and WebSocket updates **once completion is confirmed**, until the browser is refreshed. Rules are format-specific:
+Custom Matchplay Big Screen is a free, open-source project developed and shared with the competitive pinball community.
 
-- **Group knockout or basic knockout:** A round must be closed, and exactly one entrant in the official standings must have fewer strikes than `knockoutStrikeCount`. The standings endpoint supplies `strikeCount`; ranks remain the API's official `position` values. If strike data is incomplete, updates continue.
-- **Group / head-to-head match play with a fixed number of rounds:** A round must be closed, and the number of created rounds must reach the tournament's `duration` setting (which Match Play defines as a **round count**, not minutes).
-- **Open-ended / time-based match play:** Continue polling, since a scheduled end time cannot reliably tell when the TD has called time.
-- **Manually completed tournament:** A completed tournament status and closed latest round are also sufficient.
+If you find it useful and would like to buy me a coffee, beer, or a few extra pinball credits, optional donations are always appreciated!
 
-In all cases, the app waits for successfully loaded official placements and completed latest games before freezing. If an API request fails, polling continues. Each open tab freezes independently.
+**[Support the project via PayPal](https://paypal.me/YOUR_PAYPAL_USERNAME)**
 
-Approximate scheduled request rates **per open display tab** (not counting WebSocket-triggered requests, retries, or other clients):
+Donations are completely optional and do not come with any expectation of additional features, technical support, or ongoing maintenance.
 
-| View | Polling | Approximate requests |
-| --- | --- | --- |
-| Tournament / League wallboard | Games + standings every 30 seconds; tournament details + rounds + standings every 60 seconds for completion detection | **7 API requests/minute** |
-| Tournament check-in | Tournament details + RSVPs every 60 seconds; tournament status every 10 seconds | **8 requests/minute** |
-| League / series check-in | Series details + series RSVPs every 60 seconds; configured tournament status every 10 seconds | **Up to 8 requests/minute** |
-| League Finals | Tournament, games, rounds, and standings every 15 seconds **per active division** | **16 requests/minute** with A and B active; 8 when only one remains active |
-| Launcher | No scheduled polling | **0** |
+Thanks for helping make competitive pinball a little more fun!
 
-Wallboard WebSocket events can trigger additional calls: round changes fetch games and standings; game changes fetch standings; player/arena changes reload details, games, and standings. Multiple open browser tabs multiply the load. Both Finals divisions stop independently when final results are confirmed; check-in continues polling until the user navigates away.
+— Kaylee Campbell
 
-The wallboard completion check requires official standings containing placements, a successful latest games snapshot with no unfinished games, and a closed latest round. Completion-check calls fetch tournament details and rounds every 60 seconds, plus standings to evaluate knockout strikes. A final games call is made only when a completion candidate is detected. An API error leaves the last good display visible and polling continues so final standings are not lost.
 
-**Single-tournament community QR:** This view also uses the shared `getCommunityUrl()` fallback from `src/config.js`, so the card points to the GitHub README when `communityUrl` is blank. The repository must be public for guests to access it.
+## Potential future enhancements
+
+**Optional LAN / smart-TV display access** — Allow a tournament director to run the application on a laptop while a smart TV or another computer opens a **read-only display** using a local-network IP address. This would require an opt-in network mode, safe display-data endpoints, separation of admin/configuration controls from viewer access, and clear firewall instructions. **This is an idea for community contribution, not an implemented or promised feature.** The current default remains localhost-only for security.
+
+Other enhancements may be proposed through GitHub Issues or pull requests. Suggestions do not imply a commitment to implement or maintain them.
+
+## Security and licensing
+
+Keep `.env` and API tokens private. Do not share the entire working directory as a ZIP: it may contain `.env`, `node_modules`, and Git metadata. If distributing source, use a clean GitHub checkout or GitHub's source archive. This project is provided **as-is**, without a support or uptime guarantee.
+
+An explicit open-source `LICENSE` file should be added before announcing the public beta so users and contributors know their reuse rights.
+
+## Acknowledgments
+
+Thanks to [Match Play Events](https://matchplay.events/) for the tournament platform and API. **Custom Matchplay Big Screen is independent and is not affiliated with or endorsed by Match Play.**

@@ -124,3 +124,27 @@
   border: 1px solid rgba(251, 113, 133, 0.35);
   font-weight: 800;
 }
+
+/* Discovery lists: scroll within the launcher, not off the laptop screen. */
+.launcher-card{max-height:calc(100vh - 32px);overflow-y:auto;overscroll-behavior:contain;width:min(900px,100%)}
+.launcher-modes{grid-template-columns:repeat(3,minmax(0,1fr))}
+button.launcher-choice{color:inherit;font:inherit;cursor:pointer}
+button.launcher-choice.active{color:#facc15}
+.launcher-discovery-banner{margin:18px 0;display:flex;align-items:center;justify-content:space-between;gap:16px;border:1px solid #374151;background:#20212a;border-radius:12px;padding:12px 14px}
+.launcher-discovery-banner p{font-size:12px;color:#aab2c0;line-height:1.4;margin:4px 0 0}
+.launcher-discovery-banner button{flex:none;background:#343443;border:1px solid #6b7280;color:white;border-radius:8px;padding:9px 12px;cursor:pointer}
+.launcher-picker{margin-top:22px;border:1px solid #3d4050;border-radius:14px;padding:12px}
+.launcher-picker-top{display:flex;justify-content:space-between;gap:8px;align-items:center;text-transform:uppercase;font-size:14px;letter-spacing:.03em}
+.launcher-picker-top span{font-size:12px;color:#aeb8ca}
+.launcher-event-list{max-height:250px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.launcher-event-item{font:inherit;color:#f1f5f9;text-align:left;width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;background:#262831;border:1px solid #4b4e60;border-radius:10px;padding:10px;cursor:pointer}
+.launcher-event-item.selected{border-color:#facc15;background:#3c3520}
+.launcher-event-item:disabled{opacity:.65;cursor:not-allowed}
+.launcher-event-main{display:flex;flex-direction:column;gap:3px;min-width:0}
+.launcher-event-item small{font-size:11px;color:#acb5c5}
+.launcher-event-reason{font-size:12px;color:#fda4af;text-align:right;flex-shrink:0;max-width:45%}
+.launcher-event-reason.supported{color:#86efac}
+.launcher-manual-toggle{display:flex;align-items:center;gap:9px;font-size:13px;font-weight:700;margin:12px 0 8px;cursor:pointer}
+.launcher-manual-toggle input{accent-color:#facc15;width:17px;height:17px}
+.launcher-cutoff-row{display:grid;grid-template-columns:minmax(0,1fr) 95px;gap:8px;margin-bottom:8px}
+@media(max-width:580px){.launcher-card{padding:18px}.launcher-modes{grid-template-columns:1fr}.launcher-event-item{flex-direction:column;align-items:flex-start}.launcher-event-reason{max-width:none;text-align:left}.launcher-discovery-banner{flex-direction:column;align-items:stretch}}
