@@ -6,6 +6,11 @@ Custom Matchplay Big Screen is a browser-based display for competitive pinball t
 
 This is an independent community project, **not an official Match Play application**. Match Play remains the authoritative source for tournament results.
 
+### Live tournament display
+
+[![Custom Matchplay Big Screen — Live Tournament Wallboard](screenshots/tournament-wallboard.png)](screenshots/tournament-wallboard.png)
+
+
 > **Maintenance:** This project began as a display for my own events. I'm sharing it for other tournament directors to use, adapt, and improve. I expect to review significant bug reports during the initial public beta (roughly the first one to two months, through December 2026), as time permits. I can't promise ongoing maintenance, individual setup support, new formats, or long-term compatibility. Well-scoped bug reports and community pull requests are welcome. Please test with your own events before relying on it at a tournament.
 
 ## Supported tournament formats
@@ -19,6 +24,14 @@ This is an independent community project, **not an official Match Play applicati
 | **League Finals** | **Group Bracket** (group-elimination finals) | One or two divisions, advancement, tiebreakers, championship placements, and final standings |
 
 Other Match Play formats, including Best Game, Pingolf, and formats other than those listed above, are **not currently supported**. The launcher identifies incompatible events and explains why they cannot be selected. Manual ID entry is available, but does not remove format restrictions.
+
+## Screenshots
+
+A look at the different screens included in the beta. Select any image to view it full size.
+
+| Event launcher | League / Series check-in | League Finals |
+| :---: | :---: | :---: |
+| [![Event selection launcher](screenshots/launcher.png)](screenshots/launcher.png) | [![League check-in display](screenshots/league-checkin.png)](screenshots/league-checkin.png) | [![League Finals display](screenshots/league-finals.png)](screenshots/league-finals.png) |
 
 ## Before you begin: what you need
 
@@ -274,7 +287,7 @@ Other enhancements may be proposed through GitHub Issues or pull requests. Sugge
 
 Keep `.env` and API tokens private. Do not share the entire working directory as a ZIP: it may contain `.env`, `node_modules`, and Git metadata. If distributing source, use a clean GitHub checkout or GitHub's source archive. This project is provided **as-is**, without a support or uptime guarantee.
 
-An explicit open-source `LICENSE` file should be added before announcing the public beta so users and contributors know their reuse rights.
+The project is distributed under the [MIT License](LICENSE).
 
 ## Acknowledgments
 
