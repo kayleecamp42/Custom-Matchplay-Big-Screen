@@ -181,11 +181,31 @@ app.get("/api/launcher/discovery", async (_req, res) => {
 
 app.get("/api/*path", async (req, res) => {
   try {
-    const url = MATCHPLAY_API_BASE + req.originalUrl;
+    const rawPath = String(req.params.path || "");
+    const segments = rawPath.split("/");
+    if (segments.some((s) => s === "..")) {
+      return res.status(400).json({ error: "Invalid path." });
+    }
 
-    console.log("Proxying:", url);
+    const safePath = `/api/${segments.map(encodeURIComponent).join("/")}`;
+    const upstreamUrl = new URL(safePath, MATCHPLAY_API_BASE);
+    const query = new URLSearchParams();
+    for (const [key, value] of Object.entries(req.query || {})) {
+      if (Array.isArray(value)) {
+        for (const v of value) query.append(key, String(v));
+      } else if (value != null) {
+        query.append(key, String(value));
+      }
+    }
+    upstreamUrl.search = query.toString();
 
-    const response = await fetch(url, {
+    if (upstreamUrl.origin !== new URL(MATCHPLAY_API_BASE).origin) {
+      return res.status(400).json({ error: "Invalid upstream target." });
+    }
+
+    console.log("Proxying:", upstreamUrl.toString());
+
+    const response = await fetch(upstreamUrl.toString(), {
       headers: {
         Authorization: `Bearer ${TOKEN}`,
         Accept: "application/json",
