@@ -1,5 +1,6 @@
 const express = require("express");
 const path = require("node:path");
+const { MATCHPLAY_API_BASE, buildUpstreamUrl } = require("./proxyPolicy");
 // Resolve .env relative to this file, not the terminal's working directory.
 const envPath = path.join(__dirname, ".env");
 const envResult = require("dotenv").config({ path: envPath });
@@ -10,7 +11,6 @@ const app = express();
 const PORT = process.env.PORT || 8787;
 const TOKEN = process.env.MATCHPLAY_TOKEN;
 // One canonical upstream host for both discovery and the general API proxy.
-const MATCHPLAY_API_BASE = "https://api.matchplay.events";
 const DISCOVERY_USER_ID = (process.env.MATCHPLAY_USER_ID || "").trim();
 const DISCOVERY_TOURNAMENT_ID = (process.env.MATCHPLAY_DISCOVERY_TOURNAMENT_ID || "").trim();
 
@@ -181,11 +181,13 @@ app.get("/api/launcher/discovery", async (_req, res) => {
 
 app.get("/api/*path", async (req, res) => {
   try {
-    const url = MATCHPLAY_API_BASE + req.originalUrl;
+    const upstreamUrl = buildUpstreamUrl(req.params.path, req.query);
+    if (!upstreamUrl) return res.status(400).json({ error: "Unsupported Match Play API request." });
 
-    console.log("Proxying:", url);
+    console.log("Proxying:", upstreamUrl.pathname);
 
-    const response = await fetch(url, {
+    const response = await fetch(upstreamUrl, {
+      redirect: "error",
       headers: {
         Authorization: `Bearer ${TOKEN}`,
         Accept: "application/json",
@@ -199,12 +201,16 @@ app.get("/api/*path", async (req, res) => {
       .type(response.headers.get("content-type") || "application/json")
       .send(text);
   } catch (err) {
-    console.error(err);
-    res.status(500).send(String(err));
+    console.error("Proxy error:", err.message);
+    res.status(502).json({ error: "Match Play request failed." });
   }
 });
 
-app.listen(PORT, HOST, () => {
-  console.log(`Match Play proxy running on http://${HOST}:${PORT}`);
-  console.log(`Discovery configuration: user ID ${numeric(DISCOVERY_USER_ID) ? "set" : "not set"}, tournament ID ${numeric(DISCOVERY_TOURNAMENT_ID) ? "set" : "not set"}; loaded .env: ${!envResult.error}`);
-});
+if (require.main === module) {
+  app.listen(PORT, HOST, () => {
+    console.log(`Match Play proxy running on http://${HOST}:${PORT}`);
+    console.log(`Discovery configuration: user ID ${numeric(DISCOVERY_USER_ID) ? "set" : "not set"}, tournament ID ${numeric(DISCOVERY_TOURNAMENT_ID) ? "set" : "not set"}; loaded .env: ${!envResult.error}`);
+  });
+}
+
+module.exports = app;
