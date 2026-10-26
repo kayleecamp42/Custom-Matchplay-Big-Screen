@@ -4,6 +4,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "test": "node --test \"test/*.test.js\"",
     "start": "node scripts/start.js",
     "server": "node server.js"
   },

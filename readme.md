@@ -246,7 +246,10 @@ npm start       # Start frontend and backend together
 npm run dev     # Frontend only (requires the backend to be running separately)
 npm run server  # Backend only
 npm run build   # Build frontend assets to dist/ (not served by npm start)
+npm test        # Run the automated backend tests (no Match Play token needed)
 ```
+
+Run `npm test` before opening a pull request. If you use an AI coding assistant, point it at [AGENTS.md](AGENTS.md) and [docs/ARCHITECTURE_AND_GUARDRAILS.md](docs/ARCHITECTURE_AND_GUARDRAILS.md) first; they explain the project's design rules.
 
 Live screens refresh while events are active, and some stop polling after completion is confirmed to reduce Match Play API traffic. More than one open browser tab increases API usage. Avoid unnecessary refreshes and respect Match Play availability.
 
